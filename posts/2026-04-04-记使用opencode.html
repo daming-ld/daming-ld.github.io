@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <title>记使用opencode | BigPeter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        (function () {
+            try {
+                var bg = localStorage.getItem('site-bg');
+                if (bg) document.documentElement.setAttribute('data-bg', bg);
+            } catch (e) { }
+        })();
+    </script>
+    <link rel="preload" href="../assets/css/style.css" as="style">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="star-canvas-page" data-section="posts">
+    <svg class="liquid-glass-defs" aria-hidden="true" width="0" height="0" focusable="false">
+        <defs>
+            <filter id="liquid-glass-distortion" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="1" seed="7" result="noise" />
+                <feGaussianBlur in="noise" stdDeviation="0.8" result="soft-noise" />
+                <feDisplacementMap in="SourceGraphic" in2="soft-noise" scale="14" xChannelSelector="R" yChannelSelector="G" result="distorted" />
+                <feGaussianBlur in="distorted" stdDeviation="0.2" result="smoothed" />
+                <feComposite in="smoothed" in2="SourceAlpha" operator="in" />
+            </filter>
+        </defs>
+    </svg>
+    <header class="site-header">
+        <nav class="nav">
+            <button class="top-btn post-back-btn" type="button" aria-label="返回文章列表" data-back-url="../posts.html">
+                <img class="top-btn__icon" src="../assets/icon/top.svg" alt="" aria-hidden="true">
+            </button>
+            <div class="nav-links">
+                <a href="../index.html">首页</a>
+                <a href="../about.html">关于</a>
+                <a href="../projects.html">项目</a>
+                <a href="../posts.html" class="active">文章</a>
+                <a href="../checkin.html">打卡</a>
+                <div class="nav-indicator"></div>
+            </div>
+            <span class="nav-reading-title"></span>
+            <div class="bg-selector" hidden>
+                <button class="bg-btn" data-bg="paper" aria-label="纸张纹理背景" style="--dot-color: #E2D8CA;"><span class="bg-btn__dot"></span></button>
+                <button class="bg-btn" data-bg="gradient" aria-label="渐变光晕背景" style="--dot-color: #C4956A;"><span class="bg-btn__dot"></span></button>
+                <button class="bg-btn" data-bg="clean" aria-label="极简纯白背景" style="--dot-color: #E8E4DD;"><span class="bg-btn__dot"></span></button>
+            </div>
+            <button class="theme-toggle" type="button" aria-label="打开手电筒" aria-pressed="false" data-icon-sun="../assets/icon/sun.svg" data-icon-moon="../assets/icon/moon.svg">
+                <img class="theme-toggle__icon" src="../assets/icon/moon.svg" alt="" aria-hidden="true">
+            </button>
+        </nav>
+    </header>
+
+    <div class="page-container">
+        <div class="page-shell has-sidebar">
+            <div class="glass-card post-card page-main-card">
+
+                <header class="post-header">
+                    <h1>记使用opencode</h1>
+                    <div class="post-meta">
+                        <span>2026-04-04</span>
+                        <span> · BigPeter</span>
+                    </div>
+                    <div class="post-tags"><span class="tag">WSL</span>, <span class="tag">opencode</span>, <span class="tag">开发环境</span></div>
+                </header>
+
+                <hr>
+
+                <article class="post-content">
+<p>最近打算试一下用 opencode ，看看这类CLI应用使用体验如何。不过我的电脑是 Windows，而 opencode 在 Linux 环境下用起来更顺手，于是决定在 Windows 上装个 WSL（Windows Subsystem for Linux），把项目搬进去用 opencode。记录一下整个过程，也给同样在 Windows 上挣扎的开发者们一点参考。</p>
+<h2>为什么选 WSL？</h2>
+<p>以前我都是直接在 Windows 上搞开发，但很多工具链、脚本在 Linux 下更原生，尤其是涉及到服务器部署、Docker 之类的场景。虚拟机太重，双系统又麻烦，WSL2 是个不错的折中方案——既能在 Windows 上用熟悉的软件，又能享受 Linux 的命令行环境。</p>
+<h2>安装 WSL2</h2>
+<p>微软官方文档已经写得很详细了，但实际走一遍还是会踩几个坑。</p>
+<p>1. <strong>启用 WSL 功能</strong> 用管理员权限打开 PowerShell，运行：</p>
+   <div class="highlighter-rouge language-powershell"><div class="highlight"><pre class="highlight"><code>   dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+<p>dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart </code></pre></div></div> 重启电脑。</p>
+<p>2. <strong>安装 Linux 发行版</strong> 重启完成后可以运行以下代码来看目前有哪些版本可以使用</p>
+   <div class="highlighter-rouge language-powershell"><div class="highlight"><pre class="highlight"><code>   # 查看所有已安装的 WSL 发行版及其状态
+<p>wsl --list --online </code></pre></div></div></p>
+<p>3. <strong>升级到 WSL2</strong> 在 PowerShell 里执行：</p>
+   <div class="highlighter-rouge language-powershell"><div class="highlight"><pre class="highlight"><code>   wsl --set-default-version 2
+<p></code></pre></div></div></p>
+   <div class="note">
+<p>Windows11自带即为WSL2，不需要手动更新</p>
+   <div>
+<p>4. <strong>再次重启</strong> 确保设置生效</p>
+<p>5. <strong>转移到其他盘</strong> 众所周知呢，Windows默认安装总是安装到C盘下，这也导致了我们C盘的空间异常紧张，那么此时此刻，就需要我们把Linux系统转移到其他盘下</p>
+<p>- 先导出Linux系统为<code>.tar</code>文件</p>
+   <div class="highlighter-rouge language-powershell"><div class="highlight"><pre class="highlight"><code>   wsl --export Ubuntu-22.04 D:\WSL\Ubuntu-22.04\Ubuntu-22.04.tar
+<p></code></pre></div></div></p>
+<p>- 接下来把原有的Linux注销了</p>
+   <div class="highlighter-rouge language-powershell"><div class="highlight"><pre class="highlight"><code>   wsl --unregister Ubuntu-22.04
+<p></code></pre></div></div></p>
+<p>- 解压<code>.tar</code>文件</p>
+   <div class="highlighter-rouge language-powershell"><div class="highlight"><pre class="highlight"><code>   wsl --import Ubuntu-22.04 D:\WSL\Ubuntu-22.04 D:\WSL\Ubuntu-22.04\Ubuntu-22.04.tar --version 2
+<p></code></pre></div></div></p>
+<p>- 启动Ubuntu</p>
+   <div class="highlighter-rouge language-powershell"><div class="highlight"><pre class="highlight"><code>   wsl -d Ubuntu-22.04
+<p></code></pre></div></div> 启动完成后需要你输入用户名，自己想一个填进去就好了</p>
+<h2>配置开发环境</h2>
+<p>WSL 装好后，第一件事是换源、装常用工具。</p>
+<div class="highlighter-rouge language-bash"><div class="highlight"><pre class="highlight"><code># 备份原来的源
+<p>sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak # 换成阿里云源（国内快很多） sudo sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list sudo apt update &amp;&amp; sudo apt upgrade -y</p>
+<p># 装基础工具 sudo apt install -y git curl wget zsh build-essential </code></pre></div></div></p>
+<div class="note" style="margin-bottom: 1em;">
+</div>
+<p>当然，这不重要，我就没换</p>
+<p>然后配置 Git、SSH 密钥，把本地的项目拷贝到 WSL 里，如果是在GitHub或者Gitee上的项目再在WSL中<code>mkdir</code>新建一下项目目录，再到里面克隆一下仓库即可</p>
+<h2>安装 opencode</h2>
+<p>opencode 的安装只能说是及其方便了，只需要在WSL中输入<code>curl -fsSL https://opencode.ai/install | bash</code>即可</p>
+<p>安装完成后，运行 <code>opencode</code> 可直接启动。</p>
+<h2>第一次使用 opencode</h2>
+<p>在项目目录下直接跑 <code>opencode</code>，它会启动一个交互式会话。我试着让它帮我修改“关于”页面的样式，效果还不错（此时用的是免费的模型，忘记叫什么了）。</p>
+<h2>遇到的坑与解决</h2>
+<p>1. <strong>文件权限问题</strong> Windows 和 WSL 的文件系统权限不互通，从 Windows 拷贝过来的文件权限可能不对，导致脚本无法执行。用 <code>chmod +x script.sh</code> 修复即可。</p>
+<p>2. <strong>网络问题</strong> WSL2 的网络和 Windows 主机是分开的，有时候代理配置需要手动同步。在 <code>~/.bashrc</code> 里加上：</p>
+   <div class="highlighter-rouge language-bash"><div class="highlight"><pre class="highlight"><code>   export http_proxy=http://127.0.0.1:7890
+<p>export https_proxy=http://127.0.0.1:7890 </code></pre></div></div> <code>http://127.0.0.1:7890</code>前面是WSL在Windows上的ip，后面是代理的端口</p>
+<h2>总结</h2>
+<p>如果你也在用 Windows 开发，不妨试试 WSL + opencode 这个组合。</p>
+<p><strong>一点小建议</strong>：</p>
+<ul>
+<li>尽量把代码放在 WSL 分区，避免跨文件系统性能损失。</li>
+<li>定期备份 WSL 系统（<code>wsl --export</code>），免得玩坏了重装。</li>
+<li>opencode 虽然智能，但生成的代码还是要自己 review，别完全依赖它。</li>
+</ul>
+<p>接下来我打算用 opencode 继续优化这个博客的其他页面，比如文章列表、首页布局。有机会再和大家分享更多使用心得。</p>
+<hr>
+<p>*本文写于 WSL2 + Ubuntu 22.04 环境，opencode 版本为最新稳定版。*</p>
+                </article>
+
+                <hr>
+
+                <nav class="post-nav">
+                    <a class="next" href="2026-04-05-如何在claudecode中配置自己的api.html">← 如何在ClaudeCode中配置自己的API</a>
+                    <a class="prev" href="2026-03-22-ai-comparison.html">AI 平台对比：GPT、豆包、DeepSeek、Kimi →</a>
+                </nav>
+            </div>
+
+            <aside class="glass-card page-aside-card post-sidebar-card">
+                <div class="post-toc">
+                    <div class="toc-title">目录</div>
+                    <div class="toc-content"></div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="../assets/js/theme.js" defer></script>
+    <script src="../assets/js/nav.js" defer></script>
+    <script src="../assets/js/prefetch.js" defer></script>
+    <script src="../assets/js/toc.js" defer></script>
+    <script src="../assets/js/copy-code.js" defer></script>
+</body>
+
+</html>
