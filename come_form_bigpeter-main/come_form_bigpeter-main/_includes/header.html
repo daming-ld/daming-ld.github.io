@@ -1,0 +1,53 @@
+{% include liquid-glass-filter.html %}
+<header class="site-header">
+    <nav class="nav">
+        <button
+            class="top-btn{% if page.layout == 'post' %} post-back-btn{% endif %}"
+            type="button"
+            aria-label="{% if page.layout == 'post' %}返回文章列表{% else %}回到顶部{% endif %}"
+            {% if page.layout == 'post' %}data-back-url="{{ '/posts/' | relative_url }}"{% endif %}
+        >
+            <img
+                class="top-btn__icon"
+                src="{{ '/assets/icon/top.svg' | relative_url }}"
+                alt=""
+                aria-hidden="true"
+            >
+        </button>
+        <div class="nav-links">
+            <a href="{{ '/' | relative_url }}">首页</a>
+            <a href="{{ '/about/' | relative_url }}">关于</a>
+            <a href="{{ '/projects/' | relative_url }}">项目</a>
+            <a href="{{ '/posts/' | relative_url }}">文章</a>
+            <a href="{{ '/checkin/' | relative_url }}">打卡</a>
+            <div class="nav-indicator"></div>
+        </div>
+        <span class="nav-reading-title"></span>
+        <div class="bg-selector" hidden>
+            <button class="bg-btn" data-bg="paper" aria-label="纸张纹理背景" style="--dot-color: #E2D8CA;">
+                <span class="bg-btn__dot"></span>
+            </button>
+            <button class="bg-btn" data-bg="gradient" aria-label="渐变光晕背景" style="--dot-color: #C4956A;">
+                <span class="bg-btn__dot"></span>
+            </button>
+            <button class="bg-btn" data-bg="clean" aria-label="极简纯白背景" style="--dot-color: #E8E4DD;">
+                <span class="bg-btn__dot"></span>
+            </button>
+        </div>
+        <button
+            class="theme-toggle"
+            type="button"
+            aria-label="打开手电筒"
+            aria-pressed="false"
+            data-icon-sun="{{ '/assets/icon/sun.svg' | relative_url }}"
+            data-icon-moon="{{ '/assets/icon/moon.svg' | relative_url }}"
+        >
+            <img
+                class="theme-toggle__icon"
+                src="{{ '/assets/icon/moon.svg' | relative_url }}"
+                alt=""
+                aria-hidden="true"
+            >
+        </button>
+    </nav>
+</header>

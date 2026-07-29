@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <title>项目 | BigPeter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        (function () {
+            try {
+                var bg = localStorage.getItem('site-bg');
+                if (bg) document.documentElement.setAttribute('data-bg', bg);
+            } catch (e) { }
+        })();
+    </script>
+    <link rel="preload" href="assets/css/style.css" as="style">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body class="star-canvas-page">
+    <svg class="liquid-glass-defs" aria-hidden="true" width="0" height="0" focusable="false">
+        <defs>
+            <filter id="liquid-glass-distortion" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="1" seed="7" result="noise" />
+                <feGaussianBlur in="noise" stdDeviation="0.8" result="soft-noise" />
+                <feDisplacementMap in="SourceGraphic" in2="soft-noise" scale="14" xChannelSelector="R" yChannelSelector="G" result="distorted" />
+                <feGaussianBlur in="distorted" stdDeviation="0.2" result="smoothed" />
+                <feComposite in="smoothed" in2="SourceAlpha" operator="in" />
+            </filter>
+        </defs>
+    </svg>
+    <header class="site-header">
+        <nav class="nav">
+            <button class="top-btn" type="button" aria-label="回到顶部">
+                <img class="top-btn__icon" src="assets/icon/top.svg" alt="" aria-hidden="true">
+            </button>
+            <div class="nav-links">
+                <a href="index.html">首页</a>
+                <a href="about.html">关于</a>
+                <a href="projects.html" class="active">项目</a>
+                <a href="posts.html">文章</a>
+                <a href="checkin.html">打卡</a>
+                <div class="nav-indicator"></div>
+            </div>
+            <span class="nav-reading-title"></span>
+            <div class="bg-selector" hidden>
+                <button class="bg-btn" data-bg="paper" aria-label="纸张纹理背景" style="--dot-color: #E2D8CA;"><span class="bg-btn__dot"></span></button>
+                <button class="bg-btn" data-bg="gradient" aria-label="渐变光晕背景" style="--dot-color: #C4956A;"><span class="bg-btn__dot"></span></button>
+                <button class="bg-btn" data-bg="clean" aria-label="极简纯白背景" style="--dot-color: #E8E4DD;"><span class="bg-btn__dot"></span></button>
+            </div>
+            <button class="theme-toggle" type="button" aria-label="打开手电筒" aria-pressed="false" data-icon-sun="assets/icon/sun.svg" data-icon-moon="assets/icon/moon.svg">
+                <img class="theme-toggle__icon" src="assets/icon/moon.svg" alt="" aria-hidden="true">
+            </button>
+        </nav>
+    </header>
+
+    <div class="page-container">
+        <div class="page-shell has-sidebar">
+            <div class="glass-card page-main-card">
+                <h1>项目</h1>
+                <div class="page-content">
+                    <div class="projects-grid">
+                        <a href="https://retro-game-museum.pages.dev/" class="project-card" target="_blank" rel="noopener">
+                            <div class="project-header">
+                                <div class="project-icon"><img src="assets/images/retro-game-museum.webp" alt="复古游戏博物馆图标"></div>
+                                <h3 class="project-title">复古游戏博物馆</h3>
+                            </div>
+                            <p class="project-description">这是用vue+vite做的前端，后端用的是flask，数据库存储在MySQL中</p>
+                            <div class="project-tags"><span class="project-tag">技术</span><span class="project-tag">开源</span></div>
+                        </a>
+                        <a href="https://gitee.com/BigPanZH/dingdong-shopping" class="project-card" target="_blank" rel="noopener">
+                            <div class="project-header">
+                                <div class="project-icon"><img src="assets/images/dingdong.webp" alt="鸿蒙仿叮咚买菜图标"></div>
+                                <h3 class="project-title">鸿蒙仿叮咚买菜</h3>
+                            </div>
+                            <p class="project-description">在DevEco Studio中使用鸿蒙OS的能力，仿照叮咚买菜开发的一个购物APP</p>
+                            <div class="project-tags"><span class="project-tag">设计</span><span class="project-tag">APP</span></div>
+                        </a>
+                        <a href="https://github.com/holyshite/claude-hud-for-api" class="project-card" target="_blank" rel="noopener">
+                            <div class="project-header">
+                                <div class="project-icon"><img src="assets/images/claude-hud.webp" alt="Claude HUD for API图标"></div>
+                                <h3 class="project-title">Claude HUD for API</h3>
+                            </div>
+                            <p class="project-description">为使用 API 连接的 Claude Code 实时显示 token 用量、模型名称和上下文窗口信息的终端状态栏插件。</p>
+                            <div class="project-tags"><span class="project-tag">技术</span><span class="project-tag">开源</span><span class="project-tag">TypeScript</span></div>
+                        </a>
+                        <a href="https://github.com/holyshite/bireader" class="project-card" target="_blank" rel="noopener">
+                            <div class="project-header">
+                                <div class="project-icon"><img src="assets/images/bireader.webp" alt="Bireader 双语阅读器图标"></div>
+                                <h3 class="project-title">Bireader 双语阅读器</h3>
+                            </div>
+                            <p class="project-description">这是一个双语阅读软件，可以借助 AI 来实现翻译以及分析翻译结果，支持epub和pdf</p>
+                            <div class="project-tags"><span class="project-tag">Vue</span><span class="project-tag">AI</span></div>
+                        </a>
+                        <a href="https://example.com" class="project-card" target="_blank" rel="noopener">
+                            <div class="project-header">
+                                <div class="project-icon"><img src="assets/images/ai-pic-stardew.webp" alt="示例项目4图标"></div>
+                                <h3 class="project-title">示例项目4</h3>
+                            </div>
+                            <p class="project-description">第四个示例项目，展示更多项目卡片。</p>
+                            <div class="project-tags"><span class="project-tag">全栈</span><span class="project-tag">JavaScript</span></div>
+                        </a>
+                        <a href="https://example.com" class="project-card" target="_blank" rel="noopener">
+                            <div class="project-header">
+                                <div class="project-icon"><img src="assets/images/ai-pic-mita.webp" alt="示例项目5图标"></div>
+                                <h3 class="project-title">示例项目5</h3>
+                            </div>
+                            <p class="project-description">第五个示例项目，用于测试响应式布局。</p>
+                            <div class="project-tags"><span class="project-tag">移动端</span><span class="project-tag">React Native</span></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-wrapper">
+                <aside class="glass-card page-aside-card">
+                    <h2>项目信息</h2>
+                    <div class="page-content">
+                        <div class="aside-mini-card">
+                            <p>当前共有 <strong>6</strong> 个项目。</p>
+                            <p>所有项目均为开源或可公开访问。</p>
+                        </div>
+                    </div>
+                </aside>
+                <aside class="glass-card page-aside-card">
+                    <h2>项目标签</h2>
+                    <div class="page-content">
+                        <div class="tags-list">
+                            <div class="tag-list-item"><span class="tag-list-title">AI</span></div>
+                            <div class="tag-list-item"><span class="tag-list-title">APP</span></div>
+                            <div class="tag-list-item"><span class="tag-list-title">JavaScript</span></div>
+                            <div class="tag-list-item"><span class="tag-list-title">React Native</span></div>
+                            <div class="tag-list-item"><span class="tag-list-title">TypeScript</span></div>
+                            <div class="tag-list-item"><span class="tag-list-title">Vue</span></div>
+                            <div class="tag-list-item"><span class="tag-list-title">全栈</span></div>
+                            <div class="tag-list-item"><span class="tag-list-title">开源</span></div>
+                            <div class="tag-list-item"><span class="tag-list-title">技术</span></div>
+                            <div class="tag-list-item"><span class="tag-list-title">移动端</span></div>
+                            <div class="tag-list-item"><span class="tag-list-title">设计</span></div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/theme.js" defer></script>
+    <script src="assets/js/nav.js" defer></script>
+    <script src="assets/js/prefetch.js" defer></script>
+</body>
+
+</html>

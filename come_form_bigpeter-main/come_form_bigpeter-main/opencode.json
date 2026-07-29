@@ -1,0 +1,27 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "CLAUDE.md"
+  ],
+  "watcher": {
+    "ignore": [
+      "node_modules/**",
+      "vendor/**",
+      "_site/**",
+      ".jekyll-cache/**",
+      ".bundle/**"
+    ]
+  },
+  "formatter": {
+    "prettier": {
+      "disabled": true
+    }
+  },
+  "permission": {
+    "edit": "allow",
+    "bash": "allow",
+    "write": "allow"
+  },
+  "snapshot": true,
+  "autoupdate": false
+}

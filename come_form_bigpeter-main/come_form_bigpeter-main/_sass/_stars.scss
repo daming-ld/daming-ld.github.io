@@ -1,0 +1,65 @@
+@import "variables";
+
+// 全局重置
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+html {
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: black;
+
+    // 滚动条
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    // 轨道
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    // 滑块（默认隐藏）
+    &::-webkit-scrollbar-thumb {
+        background: transparent;
+        border-radius: 10px;
+        transition: background 0.3s;
+    }
+
+    // hover 显示
+    &:hover::-webkit-scrollbar-thumb {
+        background: transparentize($scrollbar-thumb, 0.7);
+    }
+
+    &:hover::-webkit-scrollbar-thumb:hover {
+        background: $scrollbar-thumb-hover;
+    }
+}
+
+// 浅色主题背景由 _light-backgrounds.scss 管理
+
+.star-canvas-page {
+    min-height: 100vh;
+    touch-action: none;
+    background: transparent;
+    overflow-y: visible;
+    overflow-x: visible;
+    -webkit-overflow-scrolling: touch; // 让 iOS 有惯性滚动
+    touch-action: pan-y; // 允许纵向滑动
+}
+
+// canvas
+#starCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    z-index: -1;
+}

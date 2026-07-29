@@ -1,0 +1,791 @@
+// _page.scss
+@import "variables";
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-container {
+    padding: {
+        top: 100px;
+        bottom: 100px;
+    }
+
+    display: flex;
+    justify-content: center;
+}
+
+.page-shell {
+    width: calc(70% + 60px);
+    max-width: 1260px;
+}
+
+.page-shell.has-sidebar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.page-shell.has-sidebar .sidebar-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: auto;
+}
+
+.page-main-card {
+    min-width: 0;
+    width: 100%;
+}
+
+.page-aside-card {
+    min-width: 0;
+    width: 100%;
+}
+
+.page-shell.has-sidebar .page-aside-card {
+    position: fixed;
+    top: calc(var(--header-height, 64px) + (var(--header-current-top, 16px) * 2));
+    right: var(--aside-right, calc(max(calc((100vw - 1260px) / 2), calc(15vw - 30px))));
+    width: 280px;
+    max-height: calc(100vh - (var(--header-height, 64px) + (var(--header-current-top, 16px) * 2)) - 20px);
+    overflow: auto;
+    /* 隐藏滚动条但保留滚动功能 */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    &::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Edge */
+    }
+    z-index: 900;
+    animation: slideInFromRight 0.5s ease-out;
+}
+
+.sidebar-wrapper .page-aside-card:nth-child(1) {
+    top: calc(var(--header-height, 64px) + (var(--header-current-top, 16px) * 2));
+    animation: slideInFromTop 0.5s ease-out;
+}
+
+.sidebar-wrapper .page-aside-card:nth-child(2) {
+    top: calc(var(--header-height, 64px) + (var(--header-current-top, 16px) * 2) + var(--aside-height, 10px) + 12px);
+    animation: slideInFromTop 0.5s ease-out 0.1s both;
+}
+
+.glass-card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 900px;
+    @include liquid-glass-surface($radius: 28px,
+        $padding: 30px,
+        $bg: transparent,
+        $border: rgba(255, 255, 255, 0.075));
+
+    color: white;
+
+    // ===== 排版系统（统一控制） =====
+
+    // 标题
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0 0 20px 0;
+        font-weight: 600;
+        line-height: 1.3;
+        letter-spacing: 0.02em;
+    }
+
+    h1 {
+        font-size: 32px;
+    }
+
+    h2 {
+        font-size: 26px;
+    }
+
+    h3 {
+        font-size: 22px;
+    }
+
+    // 段落
+    p {
+        margin: 0 0 18px 0;
+        font-size: 16px;
+        line-height: 1.8;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    // 最后一个元素去掉多余间距
+    >*:last-child {
+        margin-bottom: 0;
+    }
+
+    // 列表
+    ul,
+    ol {
+        margin: 0 0 20px 20px;
+        padding: 0;
+
+
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+    }
+
+    // 引用
+    blockquote {
+        margin: 20px 0;
+        padding: 12px 16px;
+        border-left: 3px solid rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    // 分割线
+    hr {
+        border: none;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 30px 0;
+    }
+
+    // 代码块 - CSDN风格
+    code {
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 14px;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        color: #e2e8f0;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    pre {
+        margin: 0;
+        padding: 12px 16px 20px 0;
+        border-radius: 0;
+        background: transparent;
+        border: none;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        white-space: pre-wrap; /* 代码自动换行 */
+        word-break: break-all; /* 长单词换行 */
+        overflow-wrap: break-word; /* 溢出换行 */
+
+        // 代码块内部的code元素必须完全透明，无边框
+        & > code,
+        & code {
+            background: transparent !important;
+            padding: 0 !important;
+            border: none !important;
+            font-size: 14px;
+            line-height: inherit;
+            color: #d4d4d4;
+            border-radius: 0;
+            margin: 0;
+    
+        }
+    }
+    
+    // 内联代码
+    p code,
+    li code {
+        display: inline !important;
+        margin: 0 2px;
+        font-size: 13px;
+        padding: 2px 6px;
+    }
+    
+
+    
+    // 代码块外框 - CSDN风格
+    div.highlighter-rouge {
+
+        margin: 20px 0;
+        padding: 0 0 0 2ch;
+
+
+        padding-top: 25px;
+        border-radius: 8px;
+        background: #1e1e1e;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+        position: relative;
+        
+        // 语言标签
+        &[class*="language-"]::before {
+            content: "Code";
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 11px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            padding: 6px 8px;
+            border-radius: 0 0 6px 0;
+            z-index: 1;
+            text-transform: lowercase;
+            letter-spacing: 0.05em;
+        }
+        
+        // 特定语言标签
+        &.language-powershell::before {
+            content: "powershell";
+        }
+        &.language-bash::before,
+        &.language-shell::before {
+            content: "bash";
+        }
+        &.language-js::before,
+        &.language-javascript::before {
+            content: "javascript";
+        }
+        &.language-python::before {
+            content: "python";
+        }
+        &.language-ruby::before {
+            content: "ruby";
+        }
+        &.language-html::before {
+            content: "html";
+        }
+        &.language-css::before {
+            content: "css";
+        }
+        &.language-json::before {
+            content: "json";
+        }
+        &.language-yaml::before {
+            content: "yaml";
+        }
+        &.language-md::before,
+        &.language-markdown::before {
+            content: "markdown";
+        }
+    }
+    
+    .highlight {
+        background: transparent;
+        border: none;
+        margin: 0;
+        padding: 0;
+
+
+    }
+
+    // ===== 提示块（Note / Warning / Error） =====
+
+    .note,
+    .warning,
+    .error {
+        margin: 20px 0;
+        padding: 16px 18px;
+        border-radius: 12px;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+
+        font-size: 15px;
+        line-height: 1.7;
+
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+
+        position: relative;
+    }
+
+    // ===== NOTE（信息）=====
+    .note {
+        background: rgba(80, 160, 255, 0.08);
+        border: 1px solid rgba(80, 160, 255, 0.25);
+        color: rgba(180, 220, 255, 0.95);
+
+    }
+
+    // ===== WARNING（警告）=====
+    .warning {
+        background: rgba(255, 180, 0, 0.08);
+        border: 1px solid rgba(255, 180, 0, 0.3);
+        color: rgba(255, 220, 120, 0.95);
+
+    }
+
+    // ===== ERROR（错误）=====
+    .error {
+        background: rgba(255, 80, 80, 0.08);
+        border: 1px solid rgba(255, 80, 80, 0.3);
+        color: rgba(255, 150, 150, 0.95);
+
+    }
+}
+
+@media (max-width: 1000px) {
+    .page-shell.has-sidebar {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+    }
+
+    .sidebar-wrapper {
+        flex-direction: row;
+        width: 100%;
+        gap: 18px;
+    }
+
+    .page-shell.has-sidebar .page-aside-card {
+        position: static;
+        width: 100%;
+        max-height: none;
+        overflow: visible;
+        top: auto;
+    }
+}
+
+.link {
+    color: $link-color;
+    text-decoration: none;
+    transition: color 0.3s ease;
+
+    &:hover {
+        color: $link-hover;
+        text-decoration: underline;
+    }
+
+    &:visited {
+        color: $link-visited;
+    }
+}
+
+.home-quote-shell {
+    min-height: auto;
+    padding: 100px 0 24px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.home-quote-card {
+    width: calc(70% + 60px);
+    max-width: 1260px;
+    min-height: calc(100vh - 124px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    padding-top: 10%;
+    padding-bottom: 36px;
+}
+
+.home-quote-card .home-quote-line,
+.home-quote-card .home-quote-author {
+    margin: 0;
+    min-height: 1.4em;
+}
+
+.home-quote-card .home-quote-line {
+    font-size: clamp(1.98rem, 4.2vw, 4.08rem);
+    line-height: 1.35;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: rgba(255, 255, 255, 0.96);
+}
+
+.home-quote-card .home-quote-author {
+    margin-top: 22px;
+    font-size: clamp(1.14rem, 1.86vw, 1.8rem);
+    line-height: 1.4;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.72);
+    width: 100%;
+    padding-right: 6%;
+    box-sizing: border-box;
+    text-align: right;
+}
+
+.home-icon-list {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 18px;
+    width: 100%;
+}
+
+.home-icon-item {
+    width: 64px;
+    height: 64px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    transform: scale3d(1, 1, 1);
+    transform-origin: center;
+    backface-visibility: hidden;
+    @include liquid-glass-surface($radius: 999px,
+        $padding: 0,
+        $bg: rgba(255, 255, 255, 0.006),
+        $border: rgba(255, 255, 255, 0.075));
+    will-change: transform, box-shadow, border-color, background-color;
+    animation: none;
+    transition:
+        box-shadow 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.16s ease-out,
+        background-color 0.16s ease-out;
+
+    &:hover {
+        animation: post-card-pop 0.14s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        transform: scale3d(1.018, 1.018, 1);
+        box-shadow:
+            0 10px 28px rgba(0, 0, 0, 0.1),
+            0 0 40px rgba(255, 255, 255, 0.09),
+            inset 0 1px 0 rgba(255, 255, 255, 0.14),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.13);
+        background: rgba(255, 255, 255, 0.018);
+        transition:
+            box-shadow 0.14s cubic-bezier(0.22, 1, 0.36, 1),
+            border-color 0.14s ease-out,
+            background-color 0.14s ease-out;
+    }
+
+    &:not(:hover) {
+        animation: post-card-settle 0.18s cubic-bezier(0.22, 1.2, 0.36, 1) both;
+    }
+
+    img {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+
+        pointer-events: none;
+    }
+}
+
+@media (max-width: 720px) {
+    .home-quote-shell {
+        padding-top: 100px;
+        padding-bottom: 18px;
+    }
+
+    .home-quote-card {
+        width: calc(70% + 60px);
+        max-width: 1260px;
+        min-height: calc(100vh - 118px);
+        padding-top: 18%;
+        padding-bottom: 24px;
+    }
+
+    .home-quote-author {
+        margin-top: 16px;
+    }
+
+    .home-icon-list {
+        gap: 14px;
+        margin-top: auto;
+    }
+
+    .home-icon-item {
+        width: 56px;
+        height: 56px;
+
+        img {
+            width: 26px;
+            height: 26px;
+        }
+    }
+}
+
+.tags-scroll-container {
+    position: relative;
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.tags-scroll-wrapper {
+    height: auto;
+}
+
+.tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag-list-item {
+    display: inline-block;
+    cursor: pointer;
+    transform: scale3d(1, 1, 1);
+    transform-origin: center;
+    backface-visibility: hidden;
+    @include liquid-glass-surface($radius: 18px,
+        $padding: 8px 12px,
+        $bg: rgba(255, 255, 255, 0.006),
+        $border: rgba(255, 255, 255, 0.075));
+    will-change: transform, box-shadow, border-color, background-color;
+    animation: none;
+    transition:
+        box-shadow 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.16s ease-out,
+        background-color 0.16s ease-out;
+
+    &:hover {
+        animation: post-card-pop 0.14s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        transform: scale3d(1.018, 1.018, 1);
+        box-shadow:
+            0 10px 28px rgba(0, 0, 0, 0.1),
+            0 0 40px rgba(255, 255, 255, 0.09),
+            inset 0 1px 0 rgba(255, 255, 255, 0.14),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.13);
+        background: rgba(255, 255, 255, 0.018);
+        transition:
+            box-shadow 0.14s cubic-bezier(0.22, 1, 0.36, 1),
+            border-color 0.14s ease-out,
+            background-color 0.14s ease-out;
+    }
+
+    &:not(:hover) {
+        animation: post-card-settle 0.18s cubic-bezier(0.22, 1.2, 0.36, 1) both;
+    }
+
+    &.active {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow:
+            0 0 20px rgba(255, 255, 255, 0.1),
+            0 0 40px rgba(255, 255, 255, 0.05),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    }
+}
+
+.tag-list-title {
+    display: block;
+    font-size: 12px;
+    color: white;
+    line-height: 1.4;
+}
+
+[data-theme="light"] .tag-list-item {
+    color: var(--light-tag-text);
+    background: transparent;
+    border-color: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+
+    &::before,
+    &::after {
+        display: none;
+    }
+
+    &:hover {
+        background: rgba(44, 36, 32, 0.04);
+        border-color: rgba(44, 36, 32, 0.08);
+        box-shadow: none;
+    }
+
+    &.active {
+        background: rgba(44, 36, 32, 0.08);
+        border-color: rgba(44, 36, 32, 0.15);
+        box-shadow: none;
+    }
+}
+
+[data-theme="light"] .tag-list-title {
+    color: var(--light-text-primary);
+}
+
+// 浅色主题代码块样式 - CSDN风格
+[data-theme="light"] .glass-card {
+    code {
+        background: var(--light-code-bg);
+        color: #1e293b;
+        border: 1px solid var(--light-code-border);
+    }
+
+    pre {
+        margin: 0;
+        padding: 12px 16px 20px 0;
+        border-radius: 0;
+        background: transparent;
+        border: none;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--light-code-block-text);
+        white-space: pre-wrap; /* 代码自动换行 */
+        word-break: break-all; /* 长单词换行 */
+        overflow-wrap: break-word; /* 溢出换行 */
+
+        // 代码块内部的code元素必须完全透明，无边框
+        & > code,
+        & code {
+            background: transparent !important;
+            padding: 0 !important;
+            border: none !important;
+            color: var(--light-code-block-text);
+            border-radius: 0;
+            margin: 0;
+    
+        }
+    }
+    
+
+    
+    // 代码块外框 - 浅色主题
+    div.highlighter-rouge {
+
+        margin: 20px 0;
+        padding: 0 0 0 2ch;
+
+
+        padding-top: 25px;
+        border-radius: 8px;
+        background: #f5f5f5;
+        border: 1px solid var(--light-code-block-border);
+        overflow: hidden;
+        position: relative;
+        
+        // 语言标签
+        &[class*="language-"]::before {
+            content: "Code";
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(44, 36, 32, 0.05);
+            color: var(--light-text-secondary);
+            font-size: 11px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            padding: 6px 8px;
+            border-radius: 0 0 6px 0;
+            z-index: 1;
+            text-transform: lowercase;
+            letter-spacing: 0.05em;
+        }
+        
+        // 特定语言标签
+        &.language-powershell::before {
+            content: "powershell";
+        }
+        &.language-bash::before,
+        &.language-shell::before {
+            content: "bash";
+        }
+        &.language-js::before,
+        &.language-javascript::before {
+            content: "javascript";
+        }
+        &.language-python::before {
+            content: "python";
+        }
+        &.language-ruby::before {
+            content: "ruby";
+        }
+        &.language-html::before {
+            content: "html";
+        }
+        &.language-css::before {
+            content: "css";
+        }
+        &.language-json::before {
+            content: "json";
+        }
+        &.language-yaml::before {
+            content: "yaml";
+        }
+        &.language-md::before,
+        &.language-markdown::before {
+            content: "markdown";
+        }
+    }
+    
+    .highlight {
+        background: transparent;
+        border: none;
+        margin: 0;
+        padding: 0;
+
+
+    }
+ 
+ 
+    // 复制按钮样式 - 浅色主题
+    .copy-code-btn {
+        color: #4a5568;
+        opacity: 1;
+        
+        &:hover {
+            color: #2d3748;
+            opacity: 1;
+        }
+        
+        svg {
+            stroke-width: 2.5 !important;
+        }
+    }
+}
+
+
+    // 复制按钮样式
+    .copy-code-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 2;
+        background: transparent;
+        border: none;
+        padding: 6px 8px;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: opacity 0.2s ease;
+        color: rgba(255, 255, 255, 0.5);
+        
+        &:hover {
+            opacity: 1;
+        }
+        
+        svg {
+            width: 14px;
+            height: 14px;
+            display: block;
+        }
+    }
