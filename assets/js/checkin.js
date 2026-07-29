@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 获取 OAuth 重定向 URL
     function getOAuthUrl() {
-        const frontendRedirect = window.location.origin + '/checkin/';
+        const frontendRedirect = window.location.href;
         return `${CONFIG.apiBase}/api/auth/github?redirect=${encodeURIComponent(frontendRedirect)}`;
     }
 
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function showLoggedOutState() {
         if (elements.checkinBtn) elements.checkinBtn.style.display = 'none';
         if (elements.loginBtn) {
-            const frontendRedirect = window.location.origin + '/checkin/';
+            const frontendRedirect = window.location.href;
             elements.loginBtn.href = `${CONFIG.apiBase}/api/auth/github?redirect=${encodeURIComponent(frontendRedirect)}`;
             elements.loginBtn.style.display = '';
         }
