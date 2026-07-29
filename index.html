@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Daming</title>
+    <title>BigPeter</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
         (function () {
@@ -41,6 +41,7 @@
                 <a href="about.html">关于</a>
                 <a href="projects.html">项目</a>
                 <a href="posts.html">文章</a>
+                <a href="checkin.html">打卡</a>
                 <div class="nav-indicator"></div>
             </div>
             <span class="nav-reading-title"></span>
@@ -49,7 +50,7 @@
                 <button class="bg-btn" data-bg="gradient" aria-label="渐变光晕背景" style="--dot-color: #C4956A;"><span class="bg-btn__dot"></span></button>
                 <button class="bg-btn" data-bg="clean" aria-label="极简纯白背景" style="--dot-color: #E8E4DD;"><span class="bg-btn__dot"></span></button>
             </div>
-            <button class="theme-toggle" type="button" aria-label="打开手电? aria-pressed="false" data-icon-sun="assets/icon/sun.svg" data-icon-moon="assets/icon/moon.svg">
+            <button class="theme-toggle" type="button" aria-label="打开手电筒" aria-pressed="false" data-icon-sun="assets/icon/sun.svg" data-icon-moon="assets/icon/moon.svg">
                 <img class="theme-toggle__icon" src="assets/icon/moon.svg" alt="" aria-hidden="true">
             </button>
         </nav>
@@ -57,8 +58,25 @@
 
     <main class="home-quote-shell">
         <section class="glass-card home-quote-card" aria-label="首页引言">
-            <p class="home-quote-line" id="homeQuoteText" data-text="这是一句很有哲理的�?.."></p>
-            <p class="home-quote-author" id="homeQuoteAuthor" data-text="——Daming" data-photo-url="photo.html" role="link" tabindex="0" aria-label="查看 Daming 影像档案"></p>
+            <p class="home-quote-line" id="homeQuoteText" data-text="这是一句很有哲理的话..."></p>
+            <p class="home-quote-author" id="homeQuoteAuthor" data-text="——BigPeter" data-photo-url="photo.html" role="link" tabindex="0" aria-label="查看 BigPeter 影像档案"></p>
+            <div class="home-icon-list" aria-label="首页图标">
+                <a class="home-icon-item" href="https://gitee.com/BigPanZH" title="Gitee" aria-label="Gitee">
+                    <img src="assets/icon/gitee.svg" alt="Gitee">
+                </a>
+                <a class="home-icon-item" href="https://github.com/holyshite" title="GitHub" aria-label="GitHub">
+                    <img src="assets/icon/github.svg" alt="GitHub">
+                </a>
+                <a class="home-icon-item" href="mailto:616pwpwpwpw@gmail.com" title="Gmail" aria-label="Gmail">
+                    <img src="assets/icon/gmail.svg" alt="Gmail">
+                </a>
+                <a class="home-icon-item" href="mailto:751802108@qq.com" title="QQ Mail" aria-label="QQ Mail">
+                    <img src="assets/icon/QQmail.svg" alt="QQ Mail">
+                </a>
+                <a class="home-icon-item" href="https://steamcommunity.com/profiles/76561199520206774/" title="Steam" aria-label="Steam">
+                    <img src="assets/icon/steam.svg" alt="Steam">
+                </a>
+            </div>
         </section>
     </main>
 
@@ -89,6 +107,10 @@
                 if (!quote || !author) return;
 
                 var quotes = [
+                    '这是一句很有哲理的话...',
+                    '人非无过，孰能圣贤',
+                    '如果你不相信自己，那就相信我',
+                    'efliajdbasdklvgjgaldkja>@.',
                     'The quick brown fox jumps over the lazy dog'
                 ];
                 quote.dataset.text = quotes[Math.floor(Math.random() * quotes.length)];
