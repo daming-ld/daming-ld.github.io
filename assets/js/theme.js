@@ -37,8 +37,9 @@
     }
 
     function createOverlay() {
-        // 已有同类遮罩时不再创建，避免与其他脚本重复
-        if (document.querySelector('.flashlight-overlay') || document.querySelector('.downlight-overlay')) return;
+        // 如果 Downlight 已加载，则让 Downlight 管理遮罩，不再创建额外覆盖层
+        if (window.Downlight && typeof window.Downlight.create === 'function') return;
+        if (document.querySelector('.flashlight-overlay')) return;
 
         var overlay = document.createElement('div');
         overlay.className = 'flashlight-overlay';
