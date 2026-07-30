@@ -1,24 +1,12 @@
-// assets/js/theme.js
 (function () {
     var STORAGE_KEY = 'flashlight-mode';
     var BG_STORAGE_KEY = 'site-bg';
-    var CURSOR_STORAGE_KEY = 'flashlight-cursor';
     var MODE_ON = 'on';
     var MODE_OFF = 'off';
     var BG_OPTIONS = ['paper', 'gradient', 'clean'];
     var DEFAULT_BG = 'paper';
 
-    var canvas = null;
-    var ctx = null;
-    var cursorX = -1000;
-    var cursorY = -1000;
-    var targetX = -1000;
-    var targetY = -1000;
-    var ticking = false;
-    var animating = false;
-    var mouseInside = false;
-    var LERP_FACTOR = 0.12;
-    var floatingEls = [];
+    var overlay = null;
 
     function getStoredMode() {
         try {
@@ -49,231 +37,20 @@
         } catch (e) { }
     }
 
-    function draw() {
-        ticking = false;
-        if (!canvas || !ctx) return;
-
-        cursorX += (targetX - cursorX) * LERP_FACTOR;
-        cursorY += (targetY - cursorY) * LERP_FACTOR;
-
-        var dx = targetX - cursorX;
-        var dy = targetY - cursorY;
-        if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
-            window.requestAnimationFrame(draw);
-        } else {
-            cursorX = targetX;
-            cursorY = targetY;
-            animating = false;
-        }
-
-        var w = window.innerWidth;
-        var h = window.innerHeight;
-        if (canvas.width !== w) canvas.width = w;
-        if (canvas.height !== h) canvas.height = h;
-
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, w, h);
-
-        if (mouseInside) {
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.beginPath();
-            ctx.arc(cursorX, cursorY, 140, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-
-    function scheduleDraw() {
-        if (!animating) {
-            animating = true;
-            window.requestAnimationFrame(draw);
-        }
-    }
-
-    function floatElements() {
-        var els = document.querySelectorAll('.theme-toggle, .bg-selector');
-        els.forEach(function (el) {
-            var rect = el.getBoundingClientRect();
-            var computed = window.getComputedStyle(el);
-
-            // 克隆原元素做占位，保持完全相同的布局特性
-            var placeholder = el.cloneNode(true);
-            placeholder.removeAttribute('id');
-            placeholder.style.visibility = 'hidden';
-            placeholder.style.position = '';
-            placeholder.style.zIndex = '';
-            placeholder.style.top = '';
-            placeholder.style.left = '';
-            placeholder.style.width = '';
-            placeholder.style.height = '';
-            placeholder.className = el.className + ' fl-placeholder';
-            el.parentNode.insertBefore(placeholder, el);
-
-            // 记住原始状态
-            floatingEls.push({
-                el: el,
-                placeholder: placeholder,
-                parent: el.parentNode,
-                next: el.nextSibling,
-                origDisplay: el.style.display,
-                origPosition: el.style.position,
-                origZIndex: el.style.zIndex,
-                origTop: el.style.top,
-                origLeft: el.style.left,
-                origWidth: el.style.width,
-                origHeight: el.style.height
-            });
-
-            // 移到 body，固定定位
-            document.body.appendChild(el);
-            el.style.position = 'fixed';
-            el.style.zIndex = '1002';
-            el.style.top = rect.top + 'px';
-            el.style.left = rect.left + 'px';
-            el.style.width = rect.width + 'px';
-            el.style.height = rect.height + 'px';
-            el.style.margin = '0';
-        });
-    }
-
-    function unfloatElements() {
-        floatingEls.forEach(function (item) {
-            item.el.style.display = item.origDisplay || '';
-            item.el.style.position = item.origPosition || '';
-            item.el.style.zIndex = item.origZIndex || '';
-            item.el.style.top = item.origTop || '';
-            item.el.style.left = item.origLeft || '';
-            item.el.style.width = item.origWidth || '';
-            item.el.style.height = item.origHeight || '';
-            item.el.style.margin = '';
-
-            // 放回原位
-            if (item.placeholder && item.placeholder.parentNode) {
-                item.placeholder.parentNode.insertBefore(item.el, item.placeholder);
-                item.placeholder.remove();
-            }
-        });
-        floatingEls = [];
-    }
-
-    function updateFloatPositions() {
-        floatingEls.forEach(function (item) {
-            var placeholder = item.placeholder;
-            if (!placeholder || !placeholder.parentNode) return;
-            var rect = placeholder.getBoundingClientRect();
-            item.el.style.top = rect.top + 'px';
-            item.el.style.left = rect.left + 'px';
-            item.el.style.width = rect.width + 'px';
-            item.el.style.height = rect.height + 'px';
-        });
-    }
-
-    function onResize() {
-        updateFloatPositions();
-        scheduleDraw();
-    }
-
-    function onScroll() {
-        updateFloatPositions();
-        scheduleDraw();
-    }
-
-    function onMouseLeave() {
-        mouseInside = false;
-        targetX = cursorX;
-        targetY = cursorY;
-        animating = false;
-        if (canvas && ctx) {
-            var w = window.innerWidth;
-            var h = window.innerHeight;
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, w, h);
-        }
-    }
-
-    function onMouseMove(e) {
-        mouseInside = true;
-        if (e.touches) {
-            targetX = e.touches[0].clientX;
-            targetY = e.touches[0].clientY;
-        } else {
-            targetX = e.clientX;
-            targetY = e.clientY;
-        }
-        try {
-            sessionStorage.setItem(CURSOR_STORAGE_KEY, targetX + ',' + targetY);
-        } catch (err) { }
-        scheduleDraw();
-    }
-
     function createOverlay() {
-        if (canvas) return;
-        mouseInside = true;
-        var old = document.querySelector('.flashlight-overlay');
-        if (old) old.remove();
-        var styles = document.querySelectorAll('style');
-        for (var i = 0; i < styles.length; i++) {
-            if (styles[i].textContent.indexOf('flashlight-overlay') !== -1) {
-                styles[i].remove();
-                break;
-            }
-        }
-
-        canvas = document.createElement('canvas');
-        canvas.className = 'flashlight-overlay';
-        canvas.style.background = 'transparent';
-        ctx = canvas.getContext('2d');
-        document.body.appendChild(canvas);
+        if (overlay) return;
+        overlay = document.createElement('div');
+        overlay.className = 'flashlight-overlay';
+        document.body.appendChild(overlay);
         document.body.classList.add('flashlight-mode');
-
-        floatElements();
-
-        try {
-            var saved = sessionStorage.getItem(CURSOR_STORAGE_KEY);
-            if (saved) {
-                var parts = saved.split(',');
-                targetX = Number(parts[0]) || -1000;
-                targetY = Number(parts[1]) || -1000;
-                cursorX = targetX;
-                cursorY = targetY;
-            }
-        } catch (err) { }
-        draw();
-
-        document.addEventListener('mousemove', onMouseMove, { passive: true });
-        document.addEventListener('mouseleave', onMouseLeave);
-        document.addEventListener('touchmove', onMouseMove, { passive: true });
-        window.addEventListener('resize', onResize);
-        window.addEventListener('scroll', onScroll, { passive: true });
     }
 
     function removeOverlay() {
-        if (canvas) {
-            canvas.remove();
-            canvas = null;
-            ctx = null;
-        }
-        // Also remove any other flashlight-overlay elements (e.g., from layout inline scripts)
-        var old = document.querySelector('.flashlight-overlay');
-        if (old) old.remove();
-        // Remove any inline styles for flashlight-overlay
-        var styles = document.querySelectorAll('style');
-        for (var i = 0; i < styles.length; i++) {
-            if (styles[i].textContent.indexOf('flashlight-overlay') !== -1) {
-                styles[i].remove();
-                break;
-            }
+        if (overlay) {
+            overlay.remove();
+            overlay = null;
         }
         document.body.classList.remove('flashlight-mode');
-
-        unfloatElements();
-
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseleave', onMouseLeave);
-        document.removeEventListener('touchmove', onMouseMove);
-        window.removeEventListener('resize', onResize);
-        window.removeEventListener('scroll', onScroll);
     }
 
     function applyMode(mode) {
@@ -283,17 +60,17 @@
             removeOverlay();
         }
 
-        var toggle = document.querySelector('.theme-toggle:not(.fl-placeholder)');
+        var toggle = document.querySelector('.theme-toggle');
         var icon = toggle ? toggle.querySelector('.theme-toggle__icon') : null;
 
         if (toggle && icon) {
             if (mode === MODE_ON) {
                 icon.src = toggle.dataset.iconSun;
-                toggle.setAttribute('aria-label', '关闭手电筒');
+                toggle.setAttribute('aria-label', '关闭吊顶灯');
                 toggle.setAttribute('aria-pressed', 'true');
             } else {
                 icon.src = toggle.dataset.iconMoon;
-                toggle.setAttribute('aria-label', '打开手电筒');
+                toggle.setAttribute('aria-label', '打开吊顶灯');
                 toggle.setAttribute('aria-pressed', 'false');
             }
         }
