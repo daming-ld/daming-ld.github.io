@@ -156,6 +156,10 @@
                 toggle.setAttribute('aria-pressed', 'false');
             }
         }
+
+        window.dispatchEvent(new CustomEvent('flashlight-mode-change', {
+            detail: { mode: mode }
+        }));
     }
 
     function applyBg(bg) {
