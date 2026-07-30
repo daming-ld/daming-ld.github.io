@@ -5155,173 +5155,90 @@ html[data-bg=gradient] .about-card::after {
 }
 
 /*# sourceMappingURL=style.css.map */
-/* 筒灯效果 - 45度角光束 */
+/* 筒灯效果 - 使用SVG遮罩 */
 .flashlight-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
     z-index: 999;
     pointer-events: none;
-    overflow: hidden;
 }
 
-/* 筒灯容器 */
-.downlight-container {
+.downlight-svg {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     pointer-events: none;
-    overflow: visible;
 }
 
-/* 45度角光束 - 使用圆锥渐变 */
-.downlight-beam {
-    position: absolute;
-    top: var(--light-y, 0);
-    left: var(--light-x, 50%);
-    transform: translate(-50%, -50%);
-    width: 800px;
-    height: 2000px;
-    pointer-events: none;
-    
-    /* 使用圆锥渐变创建45度光束 */
-    background: conic-gradient(
-        from 0deg at center,
-        transparent 0%,
-        transparent 22.5deg,    /* 45度角的一半 */
-        rgba(255, 255, 220, 0.15) 23deg,
-        rgba(255, 255, 220, 0.4) 24deg,
-        rgba(255, 255, 220, 0.6) 25deg,
-        rgba(255, 255, 220, 0.7) 30deg,
-        rgba(255, 255, 220, 0.8) 35deg,
-        rgba(255, 255, 220, 0.85) 40deg,
-        rgba(255, 255, 220, 0.9) 45deg,
-        rgba(255, 255, 220, 0.85) 50deg,
-        rgba(255, 255, 220, 0.8) 55deg,
-        rgba(255, 255, 220, 0.7) 60deg,
-        rgba(255, 255, 220, 0.6) 65deg,
-        rgba(255, 255, 220, 0.4) 66deg,
-        rgba(255, 255, 220, 0.15) 67deg,
-        transparent 67.5deg,
-        transparent 100%
-    );
-    
-    opacity: 0.9;
-    mask-image: linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 1) 0%,
-        rgba(255, 255, 255, 0.9) 10%,
-        rgba(255, 255, 255, 0.7) 30%,
-        rgba(255, 255, 255, 0.5) 50%,
-        rgba(255, 255, 255, 0.2) 80%,
-        transparent 100%
-    );
-    -webkit-mask-image: linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 1) 0%,
-        rgba(255, 255, 255, 0.9) 10%,
-        rgba(255, 255, 255, 0.7) 30%,
-        rgba(255, 255, 255, 0.5) 50%,
-        rgba(255, 255, 255, 0.2) 80%,
-        transparent 100%
-    );
+/* 遮罩中的锥体区域 - 让内容可见 */
+#downlight-mask rect {
+    fill: white;
 }
 
-/* 光晕效果 - 增强中心亮度 */
-.downlight-glow {
-    position: absolute;
-    top: var(--light-y, 0);
-    left: var(--light-x, 50%);
-    transform: translate(-50%, -50%);
-    width: 400px;
-    height: 1200px;
-    pointer-events: none;
-    
-    background: radial-gradient(
-        ellipse at center top,
-        rgba(255, 255, 220, 0.6) 0%,
-        rgba(255, 255, 220, 0.3) 20%,
-        rgba(255, 255, 220, 0.1) 40%,
-        transparent 70%
-    );
-    
-    opacity: 0.8;
-}
-
-/* 筒灯主体 - 发光点 */
+/* 筒灯光源装饰 - 在屏幕顶部 */
 .flashlight-overlay::before {
     content: '';
     position: fixed;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    top: var(--light-y, 50%);
-    left: var(--light-x, 50%);
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    z-index: 1001;
-    
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 60px;
     background: radial-gradient(
-        circle,
-        rgba(255, 255, 230, 0.95) 0%,
-        rgba(255, 255, 220, 0.8) 20%,
-        rgba(255, 255, 200, 0.5) 40%,
-        rgba(255, 255, 200, 0.2) 60%,
+        ellipse at center,
+        rgba(255, 255, 220, 0.6) 0%,
+        rgba(255, 255, 220, 0.3) 30%,
+        rgba(255, 255, 220, 0.1) 60%,
         transparent 80%
     );
-    
-    filter: blur(5px);
+    z-index: 1001;
+    pointer-events: none;
+    border-radius: 0 0 50% 50%;
     animation: downlightPulse 2.5s ease-in-out infinite;
 }
 
-/* 筒灯外圈装饰 */
+/* 筒灯装饰环 */
 .flashlight-overlay::after {
     content: '';
     position: fixed;
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    top: var(--light-y, 50%);
-    left: var(--light-x, 50%);
-    transform: translate(-50%, -50%);
-    pointer-events: none;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 30px;
+    border: 2px solid rgba(255, 255, 220, 0.2);
+    border-top: none;
+    border-radius: 0 0 50% 50%;
+    box-shadow: 0 0 30px rgba(255, 255, 220, 0.1);
     z-index: 1000;
-    
-    border: 3px solid rgba(255, 255, 220, 0.3);
-    box-shadow: 
-        0 0 40px rgba(255, 255, 220, 0.2),
-        inset 0 0 40px rgba(255, 255, 220, 0.1);
-    
+    pointer-events: none;
     animation: downlightRing 3s ease-in-out infinite;
 }
 
-/* 脉冲动画 */
 @keyframes downlightPulse {
     0%, 100% {
-        opacity: 0.9;
-        transform: translate(-50%, -50%) scale(1);
-        filter: blur(5px);
+        opacity: 0.8;
+        transform: translateX(-50%) scale(1);
     }
     50% {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1.15);
-        filter: blur(3px);
+        transform: translateX(-50%) scale(1.1);
     }
 }
 
 @keyframes downlightRing {
     0%, 100% {
-        opacity: 0.4;
-        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        opacity: 0.3;
+        transform: translateX(-50%) scale(1);
     }
     50% {
-        opacity: 0.8;
-        transform: translate(-50%, -50%) scale(1.2) rotate(180deg);
+        opacity: 0.6;
+        transform: translateX(-50%) scale(1.15);
     }
 }
 
@@ -5334,90 +5251,44 @@ html[data-bg=gradient] .about-card::after {
 
 @keyframes buttonDownlightGlow {
     0%, 100% {
-        filter: drop-shadow(0 0 20px rgba(255, 255, 220, 0.5));
-        transform: scale(1);
+        filter: drop-shadow(0 0 20px rgba(255, 255, 220, 0.3));
     }
     50% {
-        filter: drop-shadow(0 0 50px rgba(255, 255, 220, 0.8));
-        transform: scale(1.05);
+        filter: drop-shadow(0 0 40px rgba(255, 255, 220, 0.6));
     }
 }
 
-/* 添加灰尘粒子效果（可选） */
-.downlight-beam::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: 
-        radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.3), transparent),
-        radial-gradient(2px 2px at 40% 70%, rgba(255, 255, 255, 0.2), transparent),
-        radial-gradient(3px 3px at 60% 50%, rgba(255, 255, 255, 0.25), transparent),
-        radial-gradient(2px 2px at 80% 20%, rgba(255, 255, 255, 0.15), transparent),
-        radial-gradient(2px 2px at 10% 80%, rgba(255, 255, 255, 0.2), transparent),
-        radial-gradient(3px 3px at 90% 60%, rgba(255, 255, 255, 0.15), transparent);
-    background-size: 200px 200px;
-    pointer-events: none;
-    animation: dustFloat 20s linear infinite;
-    mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+/* 页面内容在筒灯照射下正常显示，其他区域暗化 */
+body.flashlight-mode {
+    background-color: rgba(0, 0, 0, 0.92);
 }
 
-@keyframes dustFloat {
-    0% {
-        transform: translateY(0) translateX(0);
-        opacity: 0.5;
-    }
-    25% {
-        transform: translateY(-50px) translateX(20px);
-        opacity: 0.8;
-    }
-    50% {
-        transform: translateY(-100px) translateX(-10px);
-        opacity: 0.5;
-    }
-    75% {
-        transform: translateY(-50px) translateX(30px);
-        opacity: 0.7;
-    }
-    100% {
-        transform: translateY(0) translateX(0);
-        opacity: 0.5;
-    }
+/* 确保所有内容在遮罩下正常显示，但被遮罩控制可见性 */
+body.flashlight-mode * {
+    /* 内容本身的样式不受影响，由SVG遮罩控制可见性 */
 }
 
 /* 响应式调整 */
 @media (max-width: 768px) {
-    .downlight-beam {
-        width: 400px;
-        height: 1200px;
-    }
-    
-    .downlight-glow {
-        width: 200px;
-        height: 700px;
-    }
-    
     .flashlight-overlay::before {
-        width: 50px;
-        height: 50px;
+        width: 80px;
+        height: 40px;
     }
     
     .flashlight-overlay::after {
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 20px;
     }
 }
 
 @media (max-width: 480px) {
-    .downlight-beam {
-        width: 250px;
-        height: 800px;
+    .flashlight-overlay::before {
+        width: 60px;
+        height: 30px;
     }
     
-    .downlight-glow {
-        width: 150px;
-        height: 500px;
+    .flashlight-overlay::after {
+        width: 80px;
+        height: 15px;
     }
 }
