@@ -95,9 +95,14 @@
 
         // ===== 创建筒灯 =====
         create: function() {
-            // 如果已有其他同类遮罩（theme.js 可能创建），则不再创建
+            // 如果已经创建过 Downlight，直接返回
             if (this.state.overlay) return;
-            if (document.querySelector('.flashlight-overlay')) return;
+
+            // 如果存在 theme.js 创建的旧遮罩，先移除它，避免遮罩覆盖筒灯
+            var oldFlashlight = document.querySelector('.flashlight-overlay');
+            if (oldFlashlight) {
+                oldFlashlight.remove();
+            }
 
             // 1. 创建 SVG 遮罩容器
             var overlay = document.createElement('div');
