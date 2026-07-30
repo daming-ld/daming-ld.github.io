@@ -5155,3 +5155,152 @@ html[data-bg=gradient] .about-card::after {
 }
 
 /*# sourceMappingURL=style.css.map */
+/* 吊顶灯效果样式 */
+.flashlight-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.92);
+    z-index: 999;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.light-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.light-beam {
+    position: absolute;
+    top: var(--beam-top, 0);
+    left: var(--beam-left, 50%);
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    /* 三角形锥体 */
+    border-top: 0 solid transparent;
+    border-left: 300px solid transparent;
+    border-right: 300px solid transparent;
+    border-bottom: 2000px solid rgba(255, 255, 255, 0.95);
+    transform-origin: bottom center;
+    filter: blur(0px) drop-shadow(0 0 40px rgba(255, 255, 0, 0.3));
+    opacity: 0.85;
+    /* 使用clip-path创建三角形并添加渐变 */
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+/* 在三角形基础上增加光晕渐变效果 */
+.light-beam::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 100%;
+    background: radial-gradient(
+        ellipse at center top,
+        rgba(255, 255, 200, 0.6) 0%,
+        rgba(255, 255, 200, 0.3) 40%,
+        rgba(255, 255, 200, 0.05) 70%,
+        transparent 100%
+    );
+    pointer-events: none;
+}
+
+/* 吊顶灯光源（在按钮位置） */
+.flashlight-overlay::before {
+    content: '';
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, 
+        rgba(255, 255, 200, 0.9) 0%,
+        rgba(255, 255, 200, 0.6) 30%,
+        rgba(255, 255, 200, 0.2) 60%,
+        transparent 100%
+    );
+    top: var(--light-y, 50%);
+    left: var(--light-x, 50%);
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+    pointer-events: none;
+    animation: lightPulse 2s ease-in-out infinite;
+}
+
+@keyframes lightPulse {
+    0%, 100% {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+/* 光照区域渐变到黑暗的边缘模糊效果 */
+.light-beam::after {
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    height: calc(100% + 200px);
+    background: radial-gradient(
+        ellipse at center top,
+        rgba(255, 255, 200, 0.15) 0%,
+        transparent 100%
+    );
+    pointer-events: none;
+}
+
+/* 亮起的按钮样式 */
+.theme-toggle.light-toggle-active {
+    position: relative;
+    z-index: 1002;
+    animation: buttonGlow 2s ease-in-out infinite;
+}
+
+@keyframes buttonGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 20px rgba(255, 255, 200, 0.6));
+    }
+    50% {
+        filter: drop-shadow(0 0 40px rgba(255, 255, 200, 0.9));
+    }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .light-beam {
+        border-left: 150px solid transparent;
+        border-right: 150px solid transparent;
+    }
+    
+    .light-beam::before {
+        width: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .light-beam {
+        border-left: 80px solid transparent;
+        border-right: 80px solid transparent;
+    }
+    
+    .light-beam::before {
+        width: 160px;
+    }
+}

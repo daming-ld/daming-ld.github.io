@@ -38,90 +38,39 @@
         } catch (e) { }
     }
 
-    function floatElements() {
-        var els = document.querySelectorAll('.theme-toggle, .bg-selector');
-        els.forEach(function (el) {
-            var rect = el.getBoundingClientRect();
-            var placeholder = el.cloneNode(true);
-            placeholder.removeAttribute('id');
-            placeholder.style.visibility = 'hidden';
-            placeholder.style.position = '';
-            placeholder.style.zIndex = '';
-            placeholder.style.top = '';
-            placeholder.style.left = '';
-            placeholder.style.width = '';
-            placeholder.style.height = '';
-            placeholder.className = el.className + ' fl-placeholder';
-            el.parentNode.insertBefore(placeholder, el);
-
-            floatingEls.push({
-                el: el,
-                placeholder: placeholder,
-                parent: el.parentNode,
-                next: el.nextSibling,
-                origDisplay: el.style.display,
-                origPosition: el.style.position,
-                origZIndex: el.style.zIndex,
-                origTop: el.style.top,
-                origLeft: el.style.left,
-                origWidth: el.style.width,
-                origHeight: el.style.height
-            });
-
-            document.body.appendChild(el);
-            el.style.position = 'fixed';
-            el.style.zIndex = '1002';
-            el.style.top = rect.top + 'px';
-            el.style.left = rect.left + 'px';
-            el.style.width = rect.width + 'px';
-            el.style.height = rect.height + 'px';
-            el.style.margin = '0';
-        });
-    }
-
-    function unfloatElements() {
-        floatingEls.forEach(function (item) {
-            item.el.style.display = item.origDisplay || '';
-            item.el.style.position = item.origPosition || '';
-            item.el.style.zIndex = item.origZIndex || '';
-            item.el.style.top = item.origTop || '';
-            item.el.style.left = item.origLeft || '';
-            item.el.style.width = item.origWidth || '';
-            item.el.style.height = item.origHeight || '';
-            item.el.style.margin = '';
-
-            if (item.placeholder && item.placeholder.parentNode) {
-                item.placeholder.parentNode.insertBefore(item.el, item.placeholder);
-                item.placeholder.remove();
-            }
-        });
-        floatingEls = [];
-    }
-
-    function updateFloatPositions() {
-        floatingEls.forEach(function (item) {
-            var placeholder = item.placeholder;
-            if (!placeholder || !placeholder.parentNode) return;
-            var rect = placeholder.getBoundingClientRect();
-            item.el.style.top = rect.top + 'px';
-            item.el.style.left = rect.left + 'px';
-            item.el.style.width = rect.width + 'px';
-            item.el.style.height = rect.height + 'px';
-        });
-    }
-
     function createOverlay() {
         if (document.querySelector('.flashlight-overlay')) return;
 
         var overlay = document.createElement('div');
         overlay.className = 'flashlight-overlay';
+        
+        // 创建三角形光照容器
+        var lightContainer = document.createElement('div');
+        lightContainer.className = 'light-container';
+        
+        // 创建三角形光照
+        var lightBeam = document.createElement('div');
+        lightBeam.className = 'light-beam';
+        
+        lightContainer.appendChild(lightBeam);
+        overlay.appendChild(lightContainer);
         document.body.appendChild(overlay);
         document.body.classList.add('flashlight-mode');
 
-        floatElements();
+        // 不再浮动按钮，改为按钮保持在原位但添加特殊样式
+        var toggle = document.querySelector('.theme-toggle');
+        if (toggle) {
+            toggle.classList.add('light-toggle-active');
+        }
 
-        window.addEventListener('resize', updateFloatPositions);
-        window.addEventListener('scroll', updateFloatPositions, { passive: true });
+        // 更新按钮状态
+        updateToggleState(MODE_ON);
+
+        window.addEventListener('resize', updateLightPosition);
+        window.addEventListener('scroll', updateLightPosition, { passive: true });
+        
+        // 初始更新位置
+        setTimeout(updateLightPosition, 50);
     }
 
     function removeOverlay() {
@@ -129,10 +78,59 @@
         if (overlay) overlay.remove();
         document.body.classList.remove('flashlight-mode');
 
-        unfloatElements();
+        var toggle = document.querySelector('.theme-toggle');
+        if (toggle) {
+            toggle.classList.remove('light-toggle-active');
+        }
 
-        window.removeEventListener('resize', updateFloatPositions);
-        window.removeEventListener('scroll', updateFloatPositions);
+        updateToggleState(MODE_OFF);
+
+        window.removeEventListener('resize', updateLightPosition);
+        window.removeEventListener('scroll', updateLightPosition);
+    }
+
+    function updateLightPosition() {
+        var overlay = document.querySelector('.flashlight-overlay');
+        if (!overlay) return;
+        
+        var lightContainer = overlay.querySelector('.light-container');
+        if (!lightContainer) return;
+        
+        // 获取按钮位置
+        var toggle = document.querySelector('.theme-toggle:not(.fl-placeholder)');
+        if (!toggle) return;
+        
+        var rect = toggle.getBoundingClientRect();
+        var centerX = rect.left + rect.width / 2;
+        var centerY = rect.top + rect.height / 2;
+        
+        // 更新光照位置
+        lightContainer.style.setProperty('--light-x', centerX + 'px');
+        lightContainer.style.setProperty('--light-y', centerY + 'px');
+        
+        // 更新光束锥体的起始位置
+        var beam = overlay.querySelector('.light-beam');
+        if (beam) {
+            beam.style.setProperty('--beam-top', (centerY + rect.height / 2) + 'px');
+            beam.style.setProperty('--beam-left', centerX + 'px');
+        }
+    }
+
+    function updateToggleState(mode) {
+        var toggle = document.querySelector('.theme-toggle:not(.fl-placeholder)');
+        var icon = toggle ? toggle.querySelector('.theme-toggle__icon') : null;
+
+        if (toggle && icon) {
+            if (mode === MODE_ON) {
+                icon.src = toggle.dataset.iconSun;
+                toggle.setAttribute('aria-label', '关闭吊顶灯');
+                toggle.setAttribute('aria-pressed', 'true');
+            } else {
+                icon.src = toggle.dataset.iconMoon;
+                toggle.setAttribute('aria-label', '打开吊顶灯');
+                toggle.setAttribute('aria-pressed', 'false');
+            }
+        }
     }
 
     function applyMode(mode) {
@@ -142,20 +140,7 @@
             removeOverlay();
         }
 
-        var toggle = document.querySelector('.theme-toggle:not(.fl-placeholder)');
-        var icon = toggle ? toggle.querySelector('.theme-toggle__icon') : null;
-
-        if (toggle && icon) {
-            if (mode === MODE_ON) {
-                icon.src = toggle.dataset.iconSun;
-                toggle.setAttribute('aria-label', '关闭手电筒');
-                toggle.setAttribute('aria-pressed', 'true');
-            } else {
-                icon.src = toggle.dataset.iconMoon;
-                toggle.setAttribute('aria-label', '打开手电筒');
-                toggle.setAttribute('aria-pressed', 'false');
-            }
-        }
+        setStoredMode(mode);
 
         window.dispatchEvent(new CustomEvent('flashlight-mode-change', {
             detail: { mode: mode }
@@ -179,7 +164,6 @@
         toggle.addEventListener('click', function () {
             var next = getStoredMode() === MODE_ON ? MODE_OFF : MODE_ON;
             applyMode(next);
-            setStoredMode(next);
         });
     }
 
@@ -204,8 +188,17 @@
             selector.hidden = false;
         }
 
-        applyMode(getStoredMode());
         applyBg(getStoredBg());
+        
+        // 恢复模式状态
+        var mode = getStoredMode();
+        if (mode === MODE_ON) {
+            // 延迟创建以确保DOM已完全加载
+            setTimeout(function() {
+                createOverlay();
+                setTimeout(updateLightPosition, 100);
+            }, 100);
+        }
     }
 
     if (document.readyState === 'loading') {
