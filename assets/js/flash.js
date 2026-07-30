@@ -225,7 +225,7 @@
             var angle = this.config.angle;
             var halfAngle = angle / 2;
             var radians = halfAngle * Math.PI / 180;
-            var bottomY = 110;
+            var bottomY = 600;
             var height = bottomY - topY;
             var halfWidth = height * Math.tan(radians);
 
