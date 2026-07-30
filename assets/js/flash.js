@@ -218,46 +218,47 @@
 
         // ===== 更新光束位置 =====
         updateBeam: function() {
-    var beam = document.getElementById('downlight-beam');
-    var beamSoft = document.getElementById('downlight-beam-soft');
-    if (!beam) return;
+            var beam = document.getElementById('downlight-beam');
+            var beamSoft = document.getElementById('downlight-beam-soft');
+            if (!beam) return;
 
-    var centerX = 50;
-    var topY = 0;
-    var angle = this.config.angle || 45;
-    var halfAngle = angle / 2;
-    var radians = halfAngle * Math.PI / 180;
-    
-    // ===== 动态计算高度 =====
-    var scrollHeight = Math.max(
-        document.documentElement.scrollHeight,
-        document.body.scrollHeight,
-        document.documentElement.clientHeight,
-        window.innerHeight
-    );
-    // 转换为 viewBox 百分比（viewBox 是 0-100）
-    // 假设页面高度对应 viewBox 的 100，但我们要覆盖更多
-    var bottomY = Math.max(110, (scrollHeight / window.innerHeight) * 100 + 20);
-    
-    var height = bottomY - topY;
-    var halfWidth = height * Math.tan(radians);
+            var centerX = 50;
+            var topY = 0;
+            var angle = this.config.angle || 45;
+            var halfAngle = angle / 2;
+            var radians = halfAngle * Math.PI / 180;
+            
+            // ===== 动态计算高度 =====
+            var scrollHeight = Math.max(
+                document.documentElement.scrollHeight,
+                document.body.scrollHeight,
+                document.documentElement.clientHeight,
+                window.innerHeight
+            );
+            // 转换为 viewBox 百分比（viewBox 是 0-100）
+            // 假设页面高度对应 viewBox 的 100，但我们要覆盖更多
+            var bottomY = Math.max(110, (scrollHeight / window.innerHeight) * 100 + 20);
+            
+            var height = bottomY - topY;
+            var halfWidth = height * Math.tan(radians);
 
-    var corePoints = [
-        centerX, topY,
-        centerX - halfWidth * 0.85, bottomY,
-        centerX + halfWidth * 0.85, bottomY
-    ];
-    beam.setAttribute('points', corePoints.join(','));
+            var corePoints = [
+                centerX, topY,
+                centerX - halfWidth * 0.85, bottomY,
+                centerX + halfWidth * 0.85, bottomY
+            ];
+            beam.setAttribute('points', corePoints.join(','));
 
-    if (beamSoft) {
-        var softPoints = [
-            centerX, topY,
-            centerX - halfWidth * 1.3, bottomY,
-            centerX + halfWidth * 1.3, bottomY
-        ];
-        beamSoft.setAttribute('points', softPoints.join(','));
-    }
-}
+            if (beamSoft) {
+                var softPoints = [
+                    centerX, topY,
+                    centerX - halfWidth * 1.3, bottomY,
+                    centerX + halfWidth * 1.3, bottomY
+                ];
+                beamSoft.setAttribute('points', softPoints.join(','));
+            }
+        }
+    };
 
     // ===== 暴露到全局 =====
     if (typeof module !== 'undefined' && module.exports) {
