@@ -1,0 +1,119 @@
+/* ========================================
+   筒灯效果 - 独立样式
+   在所有页面中引用此文件
+   ======================================== */
+
+/* 筒灯遮罩容器 */
+.downlight-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.downlight-overlay svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* 光源装饰 - 在遮罩之上 */
+.downlight-source {
+    position: fixed;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    pointer-events: none;
+    width: 160px;
+    height: 70px;
+}
+
+.downlight-source__glow {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 50px;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255, 255, 220, 0.9) 0%,
+        rgba(255, 255, 220, 0.4) 30%,
+        rgba(255, 255, 220, 0.1) 60%,
+        transparent 80%
+    );
+    border-radius: 0 0 50% 50%;
+    animation: sourcePulse 2.5s ease-in-out infinite;
+}
+
+.downlight-source__ring {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 25px;
+    border: 2px solid rgba(255, 255, 220, 0.25);
+    border-top: none;
+    border-radius: 0 0 50% 50%;
+    box-shadow: 0 0 40px rgba(255, 255, 220, 0.1);
+    animation: ringPulse 3s ease-in-out infinite;
+}
+
+/* 按钮激活样式 */
+.theme-toggle.downlight-active {
+    animation: buttonGlow 2.5s ease-in-out infinite;
+}
+
+/* 动画 */
+@keyframes sourcePulse {
+    0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+    50% { opacity: 1; transform: translateX(-50%) scale(1.12); }
+}
+
+@keyframes ringPulse {
+    0%, 100% { opacity: 0.4; transform: translateX(-50%) scale(1); }
+    50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+}
+
+@keyframes buttonGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 220, 0.3); }
+    50% { box-shadow: 0 0 50px rgba(255, 255, 220, 0.6); }
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .downlight-source {
+        width: 120px;
+        height: 50px;
+    }
+    .downlight-source__glow {
+        width: 70px;
+        height: 35px;
+    }
+    .downlight-source__ring {
+        width: 90px;
+        height: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .downlight-source {
+        width: 80px;
+        height: 35px;
+    }
+    .downlight-source__glow {
+        width: 50px;
+        height: 25px;
+    }
+    .downlight-source__ring {
+        width: 60px;
+        height: 12px;
+    }
+}
