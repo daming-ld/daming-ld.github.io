@@ -7,8 +7,6 @@
     var BG_OPTIONS = ['paper', 'gradient', 'clean'];
     var DEFAULT_BG = 'paper';
 
-    var floatingEls = [];
-
     function getStoredMode() {
         try {
             return window.localStorage.getItem(STORAGE_KEY) === MODE_ON ? MODE_ON : MODE_OFF;
@@ -44,32 +42,34 @@
         var overlay = document.createElement('div');
         overlay.className = 'flashlight-overlay';
         
-        // 创建三角形光照容器
+        // 创建筒灯光束容器
         var lightContainer = document.createElement('div');
-        lightContainer.className = 'light-container';
+        lightContainer.className = 'downlight-container';
         
-        // 创建三角形光照
+        // 创建光束
         var lightBeam = document.createElement('div');
-        lightBeam.className = 'light-beam';
+        lightBeam.className = 'downlight-beam';
+        
+        // 创建光晕
+        var lightGlow = document.createElement('div');
+        lightGlow.className = 'downlight-glow';
         
         lightContainer.appendChild(lightBeam);
+        lightContainer.appendChild(lightGlow);
         overlay.appendChild(lightContainer);
         document.body.appendChild(overlay);
         document.body.classList.add('flashlight-mode');
 
-        // 不再浮动按钮，改为按钮保持在原位但添加特殊样式
         var toggle = document.querySelector('.theme-toggle');
         if (toggle) {
-            toggle.classList.add('light-toggle-active');
+            toggle.classList.add('downlight-active');
         }
 
-        // 更新按钮状态
         updateToggleState(MODE_ON);
 
         window.addEventListener('resize', updateLightPosition);
         window.addEventListener('scroll', updateLightPosition, { passive: true });
         
-        // 初始更新位置
         setTimeout(updateLightPosition, 50);
     }
 
@@ -80,7 +80,7 @@
 
         var toggle = document.querySelector('.theme-toggle');
         if (toggle) {
-            toggle.classList.remove('light-toggle-active');
+            toggle.classList.remove('downlight-active');
         }
 
         updateToggleState(MODE_OFF);
@@ -93,10 +93,6 @@
         var overlay = document.querySelector('.flashlight-overlay');
         if (!overlay) return;
         
-        var lightContainer = overlay.querySelector('.light-container');
-        if (!lightContainer) return;
-        
-        // 获取按钮位置
         var toggle = document.querySelector('.theme-toggle:not(.fl-placeholder)');
         if (!toggle) return;
         
@@ -104,15 +100,13 @@
         var centerX = rect.left + rect.width / 2;
         var centerY = rect.top + rect.height / 2;
         
-        // 更新光照位置
-        lightContainer.style.setProperty('--light-x', centerX + 'px');
-        lightContainer.style.setProperty('--light-y', centerY + 'px');
-        
-        // 更新光束锥体的起始位置
-        var beam = overlay.querySelector('.light-beam');
-        if (beam) {
-            beam.style.setProperty('--beam-top', (centerY + rect.height / 2) + 'px');
-            beam.style.setProperty('--beam-left', centerX + 'px');
+        // 更新光源位置（筒灯位置）
+        var container = overlay.querySelector('.downlight-container');
+        if (container) {
+            container.style.setProperty('--light-x', centerX + 'px');
+            container.style.setProperty('--light-y', (centerY + rect.height / 2) + 'px');
+            container.style.setProperty('--light-width', rect.width + 'px');
+            container.style.setProperty('--light-height', rect.height + 'px');
         }
     }
 
@@ -123,11 +117,11 @@
         if (toggle && icon) {
             if (mode === MODE_ON) {
                 icon.src = toggle.dataset.iconSun;
-                toggle.setAttribute('aria-label', '关闭吊顶灯');
+                toggle.setAttribute('aria-label', '关闭筒灯');
                 toggle.setAttribute('aria-pressed', 'true');
             } else {
                 icon.src = toggle.dataset.iconMoon;
-                toggle.setAttribute('aria-label', '打开吊顶灯');
+                toggle.setAttribute('aria-label', '打开筒灯');
                 toggle.setAttribute('aria-pressed', 'false');
             }
         }
@@ -190,10 +184,8 @@
 
         applyBg(getStoredBg());
         
-        // 恢复模式状态
         var mode = getStoredMode();
         if (mode === MODE_ON) {
-            // 延迟创建以确保DOM已完全加载
             setTimeout(function() {
                 createOverlay();
                 setTimeout(updateLightPosition, 100);

@@ -5155,20 +5155,21 @@ html[data-bg=gradient] .about-card::after {
 }
 
 /*# sourceMappingURL=style.css.map */
-/* 吊顶灯效果样式 */
+/* 筒灯效果 - 45度角光束 */
 .flashlight-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.92);
+    background: rgba(0, 0, 0, 0.9);
     z-index: 999;
     pointer-events: none;
     overflow: hidden;
 }
 
-.light-container {
+/* 筒灯容器 */
+.downlight-container {
     position: absolute;
     top: 0;
     left: 0;
@@ -5178,129 +5179,245 @@ html[data-bg=gradient] .about-card::after {
     overflow: visible;
 }
 
-.light-beam {
+/* 45度角光束 - 使用圆锥渐变 */
+.downlight-beam {
     position: absolute;
-    top: var(--beam-top, 0);
-    left: var(--beam-left, 50%);
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
+    top: var(--light-y, 0);
+    left: var(--light-x, 50%);
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 2000px;
     pointer-events: none;
-    /* 三角形锥体 */
-    border-top: 0 solid transparent;
-    border-left: 300px solid transparent;
-    border-right: 300px solid transparent;
-    border-bottom: 2000px solid rgba(255, 255, 255, 0.95);
-    transform-origin: bottom center;
-    filter: blur(0px) drop-shadow(0 0 40px rgba(255, 255, 0, 0.3));
-    opacity: 0.85;
-    /* 使用clip-path创建三角形并添加渐变 */
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-}
-
-/* 在三角形基础上增加光晕渐变效果 */
-.light-beam::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 600px;
-    height: 100%;
-    background: radial-gradient(
-        ellipse at center top,
-        rgba(255, 255, 200, 0.6) 0%,
-        rgba(255, 255, 200, 0.3) 40%,
-        rgba(255, 255, 200, 0.05) 70%,
+    
+    /* 使用圆锥渐变创建45度光束 */
+    background: conic-gradient(
+        from 0deg at center,
+        transparent 0%,
+        transparent 22.5deg,    /* 45度角的一半 */
+        rgba(255, 255, 220, 0.15) 23deg,
+        rgba(255, 255, 220, 0.4) 24deg,
+        rgba(255, 255, 220, 0.6) 25deg,
+        rgba(255, 255, 220, 0.7) 30deg,
+        rgba(255, 255, 220, 0.8) 35deg,
+        rgba(255, 255, 220, 0.85) 40deg,
+        rgba(255, 255, 220, 0.9) 45deg,
+        rgba(255, 255, 220, 0.85) 50deg,
+        rgba(255, 255, 220, 0.8) 55deg,
+        rgba(255, 255, 220, 0.7) 60deg,
+        rgba(255, 255, 220, 0.6) 65deg,
+        rgba(255, 255, 220, 0.4) 66deg,
+        rgba(255, 255, 220, 0.15) 67deg,
+        transparent 67.5deg,
         transparent 100%
     );
-    pointer-events: none;
+    
+    opacity: 0.9;
+    mask-image: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 255, 255, 0.9) 10%,
+        rgba(255, 255, 255, 0.7) 30%,
+        rgba(255, 255, 255, 0.5) 50%,
+        rgba(255, 255, 255, 0.2) 80%,
+        transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 255, 255, 0.9) 10%,
+        rgba(255, 255, 255, 0.7) 30%,
+        rgba(255, 255, 255, 0.5) 50%,
+        rgba(255, 255, 255, 0.2) 80%,
+        transparent 100%
+    );
 }
 
-/* 吊顶灯光源（在按钮位置） */
+/* 光晕效果 - 增强中心亮度 */
+.downlight-glow {
+    position: absolute;
+    top: var(--light-y, 0);
+    left: var(--light-x, 50%);
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 1200px;
+    pointer-events: none;
+    
+    background: radial-gradient(
+        ellipse at center top,
+        rgba(255, 255, 220, 0.6) 0%,
+        rgba(255, 255, 220, 0.3) 20%,
+        rgba(255, 255, 220, 0.1) 40%,
+        transparent 70%
+    );
+    
+    opacity: 0.8;
+}
+
+/* 筒灯主体 - 发光点 */
 .flashlight-overlay::before {
     content: '';
     position: fixed;
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    background: radial-gradient(circle, 
-        rgba(255, 255, 200, 0.9) 0%,
-        rgba(255, 255, 200, 0.6) 30%,
-        rgba(255, 255, 200, 0.2) 60%,
-        transparent 100%
-    );
     top: var(--light-y, 50%);
     left: var(--light-x, 50%);
     transform: translate(-50%, -50%);
-    z-index: 1001;
     pointer-events: none;
-    animation: lightPulse 2s ease-in-out infinite;
+    z-index: 1001;
+    
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 230, 0.95) 0%,
+        rgba(255, 255, 220, 0.8) 20%,
+        rgba(255, 255, 200, 0.5) 40%,
+        rgba(255, 255, 200, 0.2) 60%,
+        transparent 80%
+    );
+    
+    filter: blur(5px);
+    animation: downlightPulse 2.5s ease-in-out infinite;
 }
 
-@keyframes lightPulse {
+/* 筒灯外圈装饰 */
+.flashlight-overlay::after {
+    content: '';
+    position: fixed;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    top: var(--light-y, 50%);
+    left: var(--light-x, 50%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1000;
+    
+    border: 3px solid rgba(255, 255, 220, 0.3);
+    box-shadow: 
+        0 0 40px rgba(255, 255, 220, 0.2),
+        inset 0 0 40px rgba(255, 255, 220, 0.1);
+    
+    animation: downlightRing 3s ease-in-out infinite;
+}
+
+/* 脉冲动画 */
+@keyframes downlightPulse {
     0%, 100% {
-        opacity: 0.8;
+        opacity: 0.9;
         transform: translate(-50%, -50%) scale(1);
+        filter: blur(5px);
     }
     50% {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1.1);
+        transform: translate(-50%, -50%) scale(1.15);
+        filter: blur(3px);
     }
 }
 
-/* 光照区域渐变到黑暗的边缘模糊效果 */
-.light-beam::after {
-    content: '';
-    position: absolute;
-    top: -100px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 400px;
-    height: calc(100% + 200px);
-    background: radial-gradient(
-        ellipse at center top,
-        rgba(255, 255, 200, 0.15) 0%,
-        transparent 100%
-    );
-    pointer-events: none;
-}
-
-/* 亮起的按钮样式 */
-.theme-toggle.light-toggle-active {
-    position: relative;
-    z-index: 1002;
-    animation: buttonGlow 2s ease-in-out infinite;
-}
-
-@keyframes buttonGlow {
+@keyframes downlightRing {
     0%, 100% {
-        filter: drop-shadow(0 0 20px rgba(255, 255, 200, 0.6));
+        opacity: 0.4;
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
     }
     50% {
-        filter: drop-shadow(0 0 40px rgba(255, 255, 200, 0.9));
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1.2) rotate(180deg);
+    }
+}
+
+/* 按钮激活样式 */
+.theme-toggle.downlight-active {
+    position: relative;
+    z-index: 1002;
+    animation: buttonDownlightGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes buttonDownlightGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 20px rgba(255, 255, 220, 0.5));
+        transform: scale(1);
+    }
+    50% {
+        filter: drop-shadow(0 0 50px rgba(255, 255, 220, 0.8));
+        transform: scale(1.05);
+    }
+}
+
+/* 添加灰尘粒子效果（可选） */
+.downlight-beam::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.3), transparent),
+        radial-gradient(2px 2px at 40% 70%, rgba(255, 255, 255, 0.2), transparent),
+        radial-gradient(3px 3px at 60% 50%, rgba(255, 255, 255, 0.25), transparent),
+        radial-gradient(2px 2px at 80% 20%, rgba(255, 255, 255, 0.15), transparent),
+        radial-gradient(2px 2px at 10% 80%, rgba(255, 255, 255, 0.2), transparent),
+        radial-gradient(3px 3px at 90% 60%, rgba(255, 255, 255, 0.15), transparent);
+    background-size: 200px 200px;
+    pointer-events: none;
+    animation: dustFloat 20s linear infinite;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+}
+
+@keyframes dustFloat {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0.5;
+    }
+    25% {
+        transform: translateY(-50px) translateX(20px);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translateY(-100px) translateX(-10px);
+        opacity: 0.5;
+    }
+    75% {
+        transform: translateY(-50px) translateX(30px);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateY(0) translateX(0);
+        opacity: 0.5;
     }
 }
 
 /* 响应式调整 */
 @media (max-width: 768px) {
-    .light-beam {
-        border-left: 150px solid transparent;
-        border-right: 150px solid transparent;
+    .downlight-beam {
+        width: 400px;
+        height: 1200px;
     }
     
-    .light-beam::before {
-        width: 300px;
+    .downlight-glow {
+        width: 200px;
+        height: 700px;
+    }
+    
+    .flashlight-overlay::before {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .flashlight-overlay::after {
+        width: 80px;
+        height: 80px;
     }
 }
 
 @media (max-width: 480px) {
-    .light-beam {
-        border-left: 80px solid transparent;
-        border-right: 80px solid transparent;
+    .downlight-beam {
+        width: 250px;
+        height: 800px;
     }
     
-    .light-beam::before {
-        width: 160px;
+    .downlight-glow {
+        width: 150px;
+        height: 500px;
     }
 }
