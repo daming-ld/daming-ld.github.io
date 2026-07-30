@@ -95,7 +95,9 @@
 
         // ===== 创建筒灯 =====
         create: function() {
+            // 如果已有其他同类遮罩（theme.js 可能创建），则不再创建
             if (this.state.overlay) return;
+            if (document.querySelector('.flashlight-overlay')) return;
 
             // 1. 创建 SVG 遮罩容器
             var overlay = document.createElement('div');
@@ -253,7 +255,7 @@
             centerX - halfWidth * 1.3, bottomY,
             centerX + halfWidth * 1.3, bottomY
         ];
-        softPolygon.setAttribute('points', softPoints.join(','));
+        beamSoft.setAttribute('points', softPoints.join(','));
     }
 }
 
