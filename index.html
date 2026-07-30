@@ -15,6 +15,9 @@
     </script>
     <link rel="preload" href="assets/css/style.css" as="style">
     <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- ===== 新增：筒灯样式 ===== -->
+    <link rel="stylesheet" href="assets/css/flash.css">
 </head>
 
 <body class="star-canvas-page">
@@ -31,6 +34,7 @@
             </filter>
         </defs>
     </svg>
+    
     <header class="site-header">
         <nav class="nav">
             <button class="top-btn" type="button" aria-label="回到顶部">
@@ -59,13 +63,19 @@
         <section class="glass-card home-quote-card" aria-label="首页引言">
             <p class="home-quote-line" id="homeQuoteText" data-text="这是一句很有哲理的话..."></p>
             <p class="home-quote-author" id="homeQuoteAuthor" data-text="——Daming" data-photo-url="photo.html" role="link" tabindex="0" aria-label="查看 Daming 影像档案"></p>
-            </section>
+        </section>
     </main>
 
+    <!-- ===== 新增：筒灯JS ===== -->
+    <script src="assets/js/flash.js"></script>
+    
+    <!-- 原有脚本 -->
     <script src="assets/js/theme.js" defer></script>
     <script src="assets/js/nav.js" defer></script>
     <script src="assets/js/prefetch.js" defer></script>
+    
     <script>
+        // ===== 原有打字效果 =====
         (function () {
             function typeText(element, text, speed, done) {
                 if (!element) return;
@@ -121,6 +131,26 @@
                 initHomeTyping();
             }
         })();
+
+        // ===== 新增：初始化筒灯 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // 等待 theme.js 执行完毕后再初始化筒灯
+            // 因为 theme.js 也绑定了 .theme-toggle 的点击事件
+            // 我们使用更安全的方式：在 theme.js 之后执行
+            setTimeout(function() {
+                if (typeof Downlight !== 'undefined') {
+                    Downlight.init({
+                        angle: 45,
+                        darkOpacity: 0.92,
+                        storageKey: 'downlight-mode'
+                    });
+                }
+            }, 300);
+        });
+
+        // ===== 或者覆盖 theme.js 的 toggle 逻辑 =====
+        // 方案：保留 theme.js 的逻辑不变，但让筒灯使用独立的按钮
+        // 但由于同一个按钮被两个脚本控制，我们需要协调
     </script>
 </body>
 
