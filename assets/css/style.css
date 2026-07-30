@@ -3732,20 +3732,29 @@ body.theme-light .link:visited {
   inset: 0;
   z-index: 1001;
   pointer-events: none;
-  background:
-    radial-gradient(
-      ellipse 130vw 75vh at 50% -5%,
-      transparent 0%,
-      transparent 30%,
-      rgba(0,0,0,0.03) 40%,
-      rgba(0,0,0,0.08) 48%,
-      rgba(0,0,0,0.18) 55%,
-      rgba(0,0,0,0.35) 62%,
-      rgba(0,0,0,0.55) 70%,
-      rgba(0,0,0,0.75) 80%,
-      rgba(0,0,0,0.9) 90%,
-      rgba(0,0,0,0.97) 100%
-    );
+  background: conic-gradient(
+    from 180deg at 50% 0,
+    transparent        0deg,
+    transparent        6deg,
+    rgba(0,0,0,0.05)   8deg,
+    rgba(0,0,0,0.15)  10deg,
+    rgba(0,0,0,0.30)  12deg,
+    rgba(0,0,0,0.50)  14deg,
+    rgba(0,0,0,0.70)  16deg,
+    rgba(0,0,0,0.85)  18deg,
+    rgba(0,0,0,0.95)  20deg,
+    black              22deg,
+    black             338deg,
+    rgba(0,0,0,0.95) 340deg,
+    rgba(0,0,0,0.85) 342deg,
+    rgba(0,0,0,0.70) 344deg,
+    rgba(0,0,0,0.50) 346deg,
+    rgba(0,0,0,0.30) 348deg,
+    rgba(0,0,0,0.15) 350deg,
+    rgba(0,0,0,0.05) 352deg,
+    transparent      354deg,
+    transparent      360deg
+  );
 }
 
 .flashlight-mode .theme-toggle {
