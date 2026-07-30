@@ -37,7 +37,8 @@
     }
 
     function createOverlay() {
-        if (document.querySelector('.flashlight-overlay')) return;
+        // 已有同类遮罩时不再创建，避免与其他脚本重复
+        if (document.querySelector('.flashlight-overlay') || document.querySelector('.downlight-overlay')) return;
 
         var overlay = document.createElement('div');
         overlay.className = 'flashlight-overlay';
@@ -236,6 +237,18 @@
         var toggle = document.querySelector('.theme-toggle');
         if (!toggle) return;
 
+        // If Downlight (flash.js) is present, delegate toggle to it to avoid duplicate overlays
+        if (window.Downlight && typeof window.Downlight.toggle === 'function') {
+            toggle.addEventListener('click', function () {
+                window.Downlight.toggle();
+                // sync stored mode
+                var next = window.Downlight && window.Downlight.state && window.Downlight.state.isOn ? MODE_ON : MODE_OFF;
+                setStoredMode(next);
+                updateToggleState(next);
+            });
+            return;
+        }
+
         toggle.addEventListener('click', function () {
             var next = getStoredMode() === MODE_ON ? MODE_OFF : MODE_ON;
             applyMode(next);
@@ -267,10 +280,18 @@
         
         var mode = getStoredMode();
         if (mode === MODE_ON) {
-            setTimeout(function() {
-                createOverlay();
-                setTimeout(updateLightPosition, 100);
-            }, 100);
+            // If Downlight (flash.js) exists, use it instead of creating a second overlay
+            if (window.Downlight && typeof window.Downlight.create === 'function') {
+                setTimeout(function() {
+                    window.Downlight.create();
+                    setTimeout(updateLightPosition, 100);
+                }, 100);
+            } else {
+                setTimeout(function() {
+                    createOverlay();
+                    setTimeout(updateLightPosition, 100);
+                }, 100);
+            }
         }
     }
 
