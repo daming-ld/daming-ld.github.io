@@ -10450,3 +10450,25 @@ body.flashlight-mode * {
     }
 }
 
+/* 修复：让导航栏在灯光模式下位于灯光效果之下 */
+html.flashlight-mode .site-header {
+    z-index: 998 !important;
+    isolation: auto !important;
+}
+
+/* 确保灯光效果在导航栏之上 */
+.flashlight-overlay {
+    z-index: 1001 !important;
+}
+
+/* 灯光模式下的导航栏背景更透明，让灯光透过 */
+html.flashlight-mode .site-header {
+    background: rgba(255, 255, 255, 0.02) !important;
+    backdrop-filter: blur(2px) !important;
+    -webkit-backdrop-filter: blur(2px) !important;
+}
+
+/* 灯光模式下，导航文字更柔和 */
+html.flashlight-mode .site-header .nav a {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
