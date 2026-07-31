@@ -1,5 +1,7 @@
 // assets/js/theme.js
 (function () {
+    'use strict';
+
     var STORAGE_KEY = 'flashlight-mode';
     var BG_STORAGE_KEY = 'site-bg';
     var MODE_ON = 'on';
@@ -7,6 +9,19 @@
     var BG_OPTIONS = ['paper', 'gradient', 'clean'];
     var DEFAULT_BG = 'paper';
 
+    // ===== 筒灯核心状态 =====
+    var downlight = {
+        isOn: false,
+        overlay: null,
+        sourceEl: null,
+        intervalId: null,
+        config: {
+            angle: 45,
+            darkOpacity: 0.92
+        }
+    };
+
+    // ===== 存储函数 =====
     function getStoredMode() {
         try {
             return window.localStorage.getItem(STORAGE_KEY) === MODE_ON ? MODE_ON : MODE_OFF;
@@ -36,72 +51,158 @@
         } catch (e) { }
     }
 
-    function createOverlay() {
-        // 如果 Downlight 已加载，则让 Downlight 管理遮罩，不再创建额外覆盖层
-        if (window.Downlight && typeof window.Downlight.create === 'function') return;
-        if (document.querySelector('.flashlight-overlay')) return;
+    // ===== 更新按钮状态 =====
+    function updateToggleState(mode) {
+        var toggle = document.querySelector('.theme-toggle:not(.fl-placeholder)');
+        var icon = toggle ? toggle.querySelector('.theme-toggle__icon') : null;
 
+        if (toggle && icon) {
+            if (mode === MODE_ON) {
+                icon.src = toggle.dataset.iconSun || icon.src;
+                toggle.setAttribute('aria-label', '关闭筒灯');
+                toggle.setAttribute('aria-pressed', 'true');
+                toggle.classList.add('downlight-active');
+            } else {
+                icon.src = toggle.dataset.iconMoon || icon.src;
+                toggle.setAttribute('aria-label', '打开筒灯');
+                toggle.setAttribute('aria-pressed', 'false');
+                toggle.classList.remove('downlight-active');
+            }
+        }
+    }
+
+    // ===== 创建筒灯遮罩（唯一的遮罩） =====
+    function createOverlay() {
+        // 如果已经存在遮罩，不重复创建
+        if (downlight.overlay) return;
+        if (document.querySelector('.flashlight-overlay')) return;
+        if (document.querySelector('.downlight-overlay')) return;
+
+        // ---- 1. 移除任何旧的冲突遮罩 ----
+        var oldFlashlight = document.querySelector('.flashlight-overlay');
+        if (oldFlashlight) oldFlashlight.remove();
+        var oldDownlight = document.querySelector('.downlight-overlay');
+        if (oldDownlight) oldDownlight.remove();
+
+        // ---- 2. 创建主容器 ----
         var overlay = document.createElement('div');
-        overlay.className = 'flashlight-overlay';
-        
-        // 创建筒灯遮罩 - 使用SVG或canvas实现锥形镂空
+        overlay.className = 'flashlight-overlay downlight-overlay';
+        overlay.id = 'downlight-overlay';
+
+        // ---- 3. 创建 SVG 遮罩 ----
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('class', 'downlight-svg');
-        svg.setAttribute('width', '100%');
-        svg.setAttribute('height', '100%');
         svg.setAttribute('viewBox', '0 0 100 100');
         svg.setAttribute('preserveAspectRatio', 'none');
-        
-        // 创建遮罩
+        svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;';
+
+        var maskId = 'downlight-mask-' + Date.now();
+
+        // 遮罩
         var mask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
-        mask.setAttribute('id', 'downlight-mask');
-        
-        // 白色背景 - 表示可见区域
-        var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        rect.setAttribute('width', '100');
-        rect.setAttribute('height', '100');
-        rect.setAttribute('fill', 'white');
-        mask.appendChild(rect);
-        
-        // 锥形光束区域 - 黑色表示透明（可见）
-        var polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-        polygon.setAttribute('id', 'light-polygon');
-        polygon.setAttribute('fill', 'black');
-        mask.appendChild(polygon);
-        
+        mask.setAttribute('id', maskId);
+
+        // 白色背景 → 全部可见
+        var bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        bgRect.setAttribute('width', '100');
+        bgRect.setAttribute('height', '100');
+        bgRect.setAttribute('fill', 'white');
+        mask.appendChild(bgRect);
+
+        // 锥形光束核心 → 黑色 = 透明（露出内容）
+        var beam = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        beam.setAttribute('id', 'downlight-beam');
+        beam.setAttribute('fill', 'black');
+        mask.appendChild(beam);
+
+        // 边缘羽化层
+        var beamSoft = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        beamSoft.setAttribute('id', 'downlight-beam-soft');
+        beamSoft.setAttribute('fill', 'rgba(0,0,0,0.3)');
+        mask.appendChild(beamSoft);
+
+        // 光晕
+        var glow = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+        glow.setAttribute('id', 'downlight-glow');
+        glow.setAttribute('fill', 'rgba(255, 255, 220, 0.12)');
+        mask.appendChild(glow);
+
         svg.appendChild(mask);
-        
-        // 应用遮罩的矩形
-        var maskedRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        maskedRect.setAttribute('width', '100');
-        maskedRect.setAttribute('height', '100');
-        maskedRect.setAttribute('fill', 'rgba(0,0,0,0.92)');
-        maskedRect.setAttribute('mask', 'url(#downlight-mask)');
-        svg.appendChild(maskedRect);
-        
+
+        // 深色遮罩矩形
+        var darkRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        darkRect.setAttribute('width', '100');
+        darkRect.setAttribute('height', '100');
+        darkRect.setAttribute('fill', 'rgba(0, 0, 0, ' + downlight.config.darkOpacity + ')');
+        darkRect.setAttribute('mask', 'url(#' + maskId + ')');
+        svg.appendChild(darkRect);
+
         overlay.appendChild(svg);
+
+        // ---- 4. 光源装饰 ----
+        var sourceEl = document.createElement('div');
+        sourceEl.className = 'downlight-source';
+
+        var sourceGlow = document.createElement('div');
+        sourceGlow.className = 'downlight-source__glow';
+        sourceEl.appendChild(sourceGlow);
+
+        var sourceRing = document.createElement('div');
+        sourceRing.className = 'downlight-source__ring';
+        sourceEl.appendChild(sourceRing);
+
+        // ---- 5. 添加到页面 ----
         document.body.appendChild(overlay);
+        document.body.appendChild(sourceEl);
+
+        // 保存引用
+        downlight.overlay = overlay;
+        downlight.sourceEl = sourceEl;
+        downlight.isOn = true;
+
         document.body.classList.add('flashlight-mode');
 
+        // ---- 6. 更新按钮 ----
         var toggle = document.querySelector('.theme-toggle');
         if (toggle) {
             toggle.classList.add('downlight-active');
         }
-
         updateToggleState(MODE_ON);
 
-        // 更新光束位置
-        window.addEventListener('resize', updateLightPosition);
-        window.addEventListener('scroll', updateLightPosition, { passive: true });
-        
-        setTimeout(updateLightPosition, 50);
-        // 持续更新位置
-        setInterval(updateLightPosition, 100);
+        // ---- 7. 启动位置更新 ----
+        updateBeamPosition();
+
+        window.addEventListener('resize', updateBeamPosition);
+        window.addEventListener('scroll', updateBeamPosition, { passive: true });
+
+        // 持续更新
+        if (downlight.intervalId) {
+            clearInterval(downlight.intervalId);
+        }
+        downlight.intervalId = setInterval(updateBeamPosition, 100);
+
+        // 触发事件
+        window.dispatchEvent(new CustomEvent('downlight:on'));
+        window.dispatchEvent(new CustomEvent('flashlight-mode-change', {
+            detail: { mode: MODE_ON }
+        }));
     }
 
+    // ===== 移除遮罩 =====
     function removeOverlay() {
-        var overlay = document.querySelector('.flashlight-overlay');
-        if (overlay) overlay.remove();
+        if (downlight.overlay) {
+            downlight.overlay.remove();
+            downlight.overlay = null;
+        }
+        if (downlight.sourceEl) {
+            downlight.sourceEl.remove();
+            downlight.sourceEl = null;
+        }
+        if (downlight.intervalId) {
+            clearInterval(downlight.intervalId);
+            downlight.intervalId = null;
+        }
+
         document.body.classList.remove('flashlight-mode');
 
         var toggle = document.querySelector('.theme-toggle');
@@ -109,121 +210,95 @@
             toggle.classList.remove('downlight-active');
         }
 
+        downlight.isOn = false;
         updateToggleState(MODE_OFF);
 
-        window.removeEventListener('resize', updateLightPosition);
-        window.removeEventListener('scroll', updateLightPosition);
+        window.removeEventListener('resize', updateBeamPosition);
+        window.removeEventListener('scroll', updateBeamPosition);
+
+        window.dispatchEvent(new CustomEvent('downlight:off'));
+        window.dispatchEvent(new CustomEvent('flashlight-mode-change', {
+            detail: { mode: MODE_OFF }
+        }));
     }
 
-    function updateLightPosition() {
-        var polygon = document.getElementById('light-polygon');
-        if (!polygon) return;
-        
-        var viewportHeight = window.innerHeight;
-        var viewportWidth = window.innerWidth;
-        
-        // 筒灯在屏幕顶部居中
-        var centerX = 50; // 百分比
-        var topY = 0; // 从顶部开始
-        
-        // 锥体角度 - 45度
-        var angle = 45;
+    // ===== 更新光束位置 =====
+    function updateBeamPosition() {
+        var beam = document.getElementById('downlight-beam');
+        var beamSoft = document.getElementById('downlight-beam-soft');
+        var glow = document.getElementById('downlight-glow');
+        if (!beam) return;
+
+        var centerX = 50;
+        var topY = 0;
+        var angle = downlight.config.angle || 45;
         var halfAngle = angle / 2;
         var radians = halfAngle * Math.PI / 180;
-        
-        // 计算锥体底部宽度
-        // 从顶部到底部，锥体越来越宽
-        var bottomY = 100; // 延伸到页面底部
+
+        // 动态计算底部高度
+        var scrollHeight = Math.max(
+            document.documentElement.scrollHeight,
+            document.body.scrollHeight,
+            document.documentElement.clientHeight,
+            window.innerHeight
+        );
+        var bottomY = Math.max(110, (scrollHeight / window.innerHeight) * 100 + 20);
+
         var height = bottomY - topY;
         var halfWidth = height * Math.tan(radians);
-        
-        // 锥体顶点在顶部居中
-        var points = [
-            centerX, topY,                          // 顶点（顶部居中）
-            centerX - halfWidth, bottomY,           // 左下
-            centerX + halfWidth, bottomY            // 右下
-        ];
-        
-        // 添加边缘羽化效果（稍微扩大锥体范围，使用渐变透明度）
-        var spread = 1.3; // 扩展系数，让边缘有羽化
-        var halfWidthSoft = height * Math.tan(radians * spread);
-        
-        // 使用多个三角形叠加实现渐变边缘
-        // 核心区域（完全透明/可见）
+
+        // 核心光束
         var corePoints = [
             centerX, topY,
-            centerX - halfWidth * 0.9, bottomY,
-            centerX + halfWidth * 0.9, bottomY
+            centerX - halfWidth * 0.85, bottomY,
+            centerX + halfWidth * 0.85, bottomY
         ];
-        
-        // 过渡区域（半透明）
-        var softPoints = [
-            centerX, topY,
-            centerX - halfWidth * 1.2, bottomY,
-            centerX + halfWidth * 1.2, bottomY
-        ];
-        
-        // 更新SVG多边形 - 使用多层实现羽化
-        polygon.setAttribute('points', corePoints.join(','));
-        
-        // 添加第二层半透明锥体实现羽化
-        var existingSoft = document.getElementById('light-polygon-soft');
-        if (!existingSoft) {
-            var mask = document.getElementById('downlight-mask');
-            var softPolygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-            softPolygon.setAttribute('id', 'light-polygon-soft');
-            softPolygon.setAttribute('fill', 'rgba(0,0,0,0.3)'); // 半透明，实现羽化
-            mask.appendChild(softPolygon);
-            existingSoft = softPolygon;
-        }
-        existingSoft.setAttribute('points', softPoints.join(','));
-        
-        // 添加光晕效果（在锥体顶点）
-        var glow = document.querySelector('.downlight-glow-svg');
-        if (!glow) {
-            glow = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
-            glow.setAttribute('class', 'downlight-glow-svg');
-            glow.setAttribute('fill', 'rgba(255, 255, 220, 0.15)');
-            var mask = document.getElementById('downlight-mask');
-            mask.appendChild(glow);
-        }
-        glow.setAttribute('cx', centerX + '%');
-        glow.setAttribute('cy', topY + '%');
-        glow.setAttribute('rx', (halfWidth * 1.5) + '%');
-        glow.setAttribute('ry', (height * 0.3) + '%');
-    }
+        beam.setAttribute('points', corePoints.join(','));
 
-    function updateToggleState(mode) {
-        var toggle = document.querySelector('.theme-toggle:not(.fl-placeholder)');
-        var icon = toggle ? toggle.querySelector('.theme-toggle__icon') : null;
+        // 羽化层
+        if (beamSoft) {
+            var softPoints = [
+                centerX, topY,
+                centerX - halfWidth * 1.3, bottomY,
+                centerX + halfWidth * 1.3, bottomY
+            ];
+            beamSoft.setAttribute('points', softPoints.join(','));
+        }
 
-        if (toggle && icon) {
-            if (mode === MODE_ON) {
-                icon.src = toggle.dataset.iconSun;
-                toggle.setAttribute('aria-label', '关闭筒灯');
-                toggle.setAttribute('aria-pressed', 'true');
-            } else {
-                icon.src = toggle.dataset.iconMoon;
-                toggle.setAttribute('aria-label', '打开筒灯');
-                toggle.setAttribute('aria-pressed', 'false');
-            }
+        // 光晕
+        if (glow) {
+            glow.setAttribute('cx', centerX + '%');
+            glow.setAttribute('cy', topY + '%');
+            glow.setAttribute('rx', (halfWidth * 1.8) + '%');
+            glow.setAttribute('ry', (height * 0.25) + '%');
         }
     }
 
+    // ===== 切换模式 =====
+    function toggleMode() {
+        var currentMode = getStoredMode();
+        var nextMode = currentMode === MODE_ON ? MODE_OFF : MODE_ON;
+
+        if (nextMode === MODE_ON) {
+            createOverlay();
+        } else {
+            removeOverlay();
+        }
+
+        setStoredMode(nextMode);
+    }
+
+    // ===== 应用模式（外部调用） =====
     function applyMode(mode) {
         if (mode === MODE_ON) {
             createOverlay();
         } else {
             removeOverlay();
         }
-
         setStoredMode(mode);
-
-        window.dispatchEvent(new CustomEvent('flashlight-mode-change', {
-            detail: { mode: mode }
-        }));
     }
 
+    // ===== 背景切换 =====
     function applyBg(bg) {
         document.documentElement.setAttribute('data-bg', bg);
         document.querySelectorAll('.bg-btn').forEach(function (btn) {
@@ -234,28 +309,23 @@
         }));
     }
 
+    // ===== 绑定切换按钮 =====
     function bindToggle() {
         var toggle = document.querySelector('.theme-toggle');
         if (!toggle) return;
 
-        // If Downlight (flash.js) is present, delegate toggle to it to avoid duplicate overlays
-        if (window.Downlight && typeof window.Downlight.toggle === 'function') {
-            toggle.addEventListener('click', function () {
-                window.Downlight.toggle();
-                // sync stored mode
-                var next = window.Downlight && window.Downlight.state && window.Downlight.state.isOn ? MODE_ON : MODE_OFF;
-                setStoredMode(next);
-                updateToggleState(next);
-            });
-            return;
-        }
-
-        toggle.addEventListener('click', function () {
-            var next = getStoredMode() === MODE_ON ? MODE_OFF : MODE_ON;
-            applyMode(next);
-        });
+        // 移除所有已有的事件监听器（使用新函数替换）
+        toggle.removeEventListener('click', bindToggle._handler);
+        
+        bindToggle._handler = function (e) {
+            e.preventDefault();
+            toggleMode();
+        };
+        
+        toggle.addEventListener('click', bindToggle._handler);
     }
 
+    // ===== 绑定背景选择器 =====
     function bindBgSelector() {
         var selector = document.querySelector('.bg-selector');
         if (!selector) return;
@@ -268,7 +338,37 @@
         });
     }
 
+    // ===== 暴露全局 API =====
+    function exposeAPI() {
+        window.Downlight = {
+            config: downlight.config,
+            state: {
+                get isOn() { return downlight.isOn; }
+            },
+            create: createOverlay,
+            destroy: removeOverlay,
+            toggle: toggleMode,
+            updateBeam: updateBeamPosition
+        };
+
+        // 兼容旧版 theme.js API
+        window.flashlight = {
+            on: createOverlay,
+            off: removeOverlay,
+            toggle: toggleMode,
+            isOn: function() { return downlight.isOn; }
+        };
+    }
+
+    // ===== 初始化 =====
     function init() {
+        // 清理任何残留遮罩
+        var oldOverlays = document.querySelectorAll('.flashlight-overlay, .downlight-overlay');
+        oldOverlays.forEach(function(el) { el.remove(); });
+        var oldSources = document.querySelectorAll('.downlight-source');
+        oldSources.forEach(function(el) { el.remove(); });
+        document.body.classList.remove('flashlight-mode');
+
         bindToggle();
         bindBgSelector();
 
@@ -278,27 +378,26 @@
         }
 
         applyBg(getStoredBg());
-        
+
+        // 恢复状态
         var mode = getStoredMode();
         if (mode === MODE_ON) {
-            // If Downlight (flash.js) exists, use it instead of creating a second overlay
-            if (window.Downlight && typeof window.Downlight.create === 'function') {
-                setTimeout(function() {
-                    window.Downlight.create();
-                    setTimeout(updateLightPosition, 100);
-                }, 100);
-            } else {
-                setTimeout(function() {
-                    createOverlay();
-                    setTimeout(updateLightPosition, 100);
-                }, 100);
-            }
+            setTimeout(function() {
+                createOverlay();
+                setTimeout(updateBeamPosition, 50);
+            }, 150);
+        } else {
+            updateToggleState(MODE_OFF);
         }
+
+        exposeAPI();
     }
 
+    // ===== 启动 =====
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init, { once: true });
     } else {
         init();
     }
+
 })();
