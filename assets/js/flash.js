@@ -93,6 +93,7 @@
             }
         },
 
+        
         // ===== 创建筒灯 =====
         create: function() {
             // 如果已经创建过 Downlight，直接返回
