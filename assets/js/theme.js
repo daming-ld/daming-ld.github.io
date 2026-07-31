@@ -15,6 +15,7 @@
         overlay: null,
         sourceEl: null,
         intervalId: null,
+        isInitialized: false,
         config: {
             angle: 45,
             darkOpacity: 0.92
@@ -58,12 +59,16 @@
 
         if (toggle && icon) {
             if (mode === MODE_ON) {
-                icon.src = toggle.dataset.iconSun || icon.src;
+                if (toggle.dataset.iconSun) {
+                    icon.src = toggle.dataset.iconSun;
+                }
                 toggle.setAttribute('aria-label', '关闭筒灯');
                 toggle.setAttribute('aria-pressed', 'true');
                 toggle.classList.add('downlight-active');
             } else {
-                icon.src = toggle.dataset.iconMoon || icon.src;
+                if (toggle.dataset.iconMoon) {
+                    icon.src = toggle.dataset.iconMoon;
+                }
                 toggle.setAttribute('aria-label', '打开筒灯');
                 toggle.setAttribute('aria-pressed', 'false');
                 toggle.classList.remove('downlight-active');
@@ -71,25 +76,35 @@
         }
     }
 
-    // ===== 创建筒灯遮罩（唯一的遮罩） =====
+    // ===== 创建筒灯遮罩 =====
     function createOverlay() {
         // 如果已经存在遮罩，不重复创建
-        if (downlight.overlay) return;
-        if (document.querySelector('.flashlight-overlay')) return;
-        if (document.querySelector('.downlight-overlay')) return;
+        if (downlight.overlay) {
+            // 如果遮罩存在但不可见，让它可见
+            downlight.overlay.style.display = '';
+            if (downlight.sourceEl) {
+                downlight.sourceEl.style.display = '';
+            }
+            downlight.isOn = true;
+            document.body.classList.add('flashlight-mode');
+            updateToggleState(MODE_ON);
+            return;
+        }
 
-        // ---- 1. 移除任何旧的冲突遮罩 ----
+        // 移除任何旧的冲突遮罩
         var oldFlashlight = document.querySelector('.flashlight-overlay');
         if (oldFlashlight) oldFlashlight.remove();
         var oldDownlight = document.querySelector('.downlight-overlay');
         if (oldDownlight) oldDownlight.remove();
+        var oldSources = document.querySelectorAll('.downlight-source');
+        oldSources.forEach(function(el) { el.remove(); });
 
-        // ---- 2. 创建主容器 ----
+        // ---- 创建主容器 ----
         var overlay = document.createElement('div');
         overlay.className = 'flashlight-overlay downlight-overlay';
         overlay.id = 'downlight-overlay';
 
-        // ---- 3. 创建 SVG 遮罩 ----
+        // ---- 创建 SVG 遮罩 ----
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('class', 'downlight-svg');
         svg.setAttribute('viewBox', '0 0 100 100');
@@ -109,7 +124,7 @@
         bgRect.setAttribute('fill', 'white');
         mask.appendChild(bgRect);
 
-        // 锥形光束核心 → 黑色 = 透明（露出内容）
+        // 锥形光束核心 → 黑色 = 透明
         var beam = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
         beam.setAttribute('id', 'downlight-beam');
         beam.setAttribute('fill', 'black');
@@ -139,7 +154,7 @@
 
         overlay.appendChild(svg);
 
-        // ---- 4. 光源装饰 ----
+        // ---- 光源装饰 ----
         var sourceEl = document.createElement('div');
         sourceEl.className = 'downlight-source';
 
@@ -151,7 +166,7 @@
         sourceRing.className = 'downlight-source__ring';
         sourceEl.appendChild(sourceRing);
 
-        // ---- 5. 添加到页面 ----
+        // ---- 添加到页面 ----
         document.body.appendChild(overlay);
         document.body.appendChild(sourceEl);
 
@@ -162,16 +177,17 @@
 
         document.body.classList.add('flashlight-mode');
 
-        // ---- 6. 更新按钮 ----
+        // ---- 更新按钮 ----
         var toggle = document.querySelector('.theme-toggle');
         if (toggle) {
             toggle.classList.add('downlight-active');
         }
         updateToggleState(MODE_ON);
 
-        // ---- 7. 启动位置更新 ----
+        // ---- 启动位置更新 ----
         updateBeamPosition();
 
+        // 监听窗口变化
         window.addEventListener('resize', updateBeamPosition);
         window.addEventListener('scroll', updateBeamPosition, { passive: true });
 
@@ -276,26 +292,17 @@
 
     // ===== 切换模式 =====
     function toggleMode() {
-        var currentMode = getStoredMode();
-        var nextMode = currentMode === MODE_ON ? MODE_OFF : MODE_ON;
-
-        if (nextMode === MODE_ON) {
-            createOverlay();
-        } else {
+        console.log('[Downlight] toggle called, current isOn:', downlight.isOn);
+        
+        if (downlight.isOn) {
             removeOverlay();
-        }
-
-        setStoredMode(nextMode);
-    }
-
-    // ===== 应用模式（外部调用） =====
-    function applyMode(mode) {
-        if (mode === MODE_ON) {
-            createOverlay();
+            setStoredMode(MODE_OFF);
         } else {
-            removeOverlay();
+            createOverlay();
+            setStoredMode(MODE_ON);
         }
-        setStoredMode(mode);
+        
+        console.log('[Downlight] after toggle, isOn:', downlight.isOn);
     }
 
     // ===== 背景切换 =====
@@ -312,17 +319,32 @@
     // ===== 绑定切换按钮 =====
     function bindToggle() {
         var toggle = document.querySelector('.theme-toggle');
-        if (!toggle) return;
+        if (!toggle) {
+            console.warn('[Downlight] No .theme-toggle found');
+            return;
+        }
 
-        // 移除所有已有的事件监听器（使用新函数替换）
-        toggle.removeEventListener('click', bindToggle._handler);
-        
-        bindToggle._handler = function (e) {
+        console.log('[Downlight] Binding toggle button');
+
+        // 移除所有已有的事件监听器
+        var newToggle = toggle.cloneNode(true);
+        toggle.parentNode.replaceChild(newToggle, toggle);
+        toggle = newToggle;
+
+        // 绑定点击事件
+        toggle.addEventListener('click', function (e) {
             e.preventDefault();
+            e.stopPropagation();
+            console.log('[Downlight] Button clicked');
             toggleMode();
-        };
-        
-        toggle.addEventListener('click', bindToggle._handler);
+        });
+
+        // 如果当前是开启状态，更新按钮样式
+        var mode = getStoredMode();
+        if (mode === MODE_ON) {
+            toggle.classList.add('downlight-active');
+        }
+        updateToggleState(mode);
     }
 
     // ===== 绑定背景选择器 =====
@@ -351,17 +373,20 @@
             updateBeam: updateBeamPosition
         };
 
-        // 兼容旧版 theme.js API
         window.flashlight = {
             on: createOverlay,
             off: removeOverlay,
             toggle: toggleMode,
             isOn: function() { return downlight.isOn; }
         };
+
+        console.log('[Downlight] API exposed');
     }
 
     // ===== 初始化 =====
     function init() {
+        console.log('[Downlight] Initializing...');
+
         // 清理任何残留遮罩
         var oldOverlays = document.querySelectorAll('.flashlight-overlay, .downlight-overlay');
         oldOverlays.forEach(function(el) { el.remove(); });
@@ -381,6 +406,8 @@
 
         // 恢复状态
         var mode = getStoredMode();
+        console.log('[Downlight] Stored mode:', mode);
+        
         if (mode === MODE_ON) {
             setTimeout(function() {
                 createOverlay();
@@ -391,6 +418,8 @@
         }
 
         exposeAPI();
+        downlight.isInitialized = true;
+        console.log('[Downlight] Initialized');
     }
 
     // ===== 启动 =====
