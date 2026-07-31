@@ -1,25 +1,26 @@
 /* ========================================
-   筒灯效果 - 独立样式
-   在所有页面中引用此文件
+   筒灯效果 - 统一样式
+   合并 flash.css 中的样式
    ======================================== */
 
-/* 筒灯遮罩容器 */
-.downlight-overlay {
+/* 筒灯遮罩容器 - 统一使用 .flashlight-overlay */
+.flashlight-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 9999;
+    z-index: 999;
     pointer-events: none;
 }
 
-.downlight-overlay svg {
+.flashlight-overlay .downlight-svg {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    pointer-events: none;
 }
 
 /* 光源装饰 - 在遮罩之上 */
@@ -28,14 +29,10 @@
     top: -10px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 10001;
+    z-index: 1001;
     pointer-events: none;
     width: 160px;
     height: 70px;
-}
-
-.downlight-overlay {
-    z-index: 9999;
 }
 
 .downlight-source__glow {
@@ -53,7 +50,7 @@
         transparent 80%
     );
     border-radius: 0 0 50% 50%;
-    animation: sourcePulse 2.5s ease-in-out infinite;
+    animation: downlightPulse 2.5s ease-in-out infinite;
 }
 
 .downlight-source__ring {
@@ -67,28 +64,28 @@
     border-top: none;
     border-radius: 0 0 50% 50%;
     box-shadow: 0 0 40px rgba(255, 255, 220, 0.1);
-    animation: ringPulse 3s ease-in-out infinite;
-}
-
-/* 按钮激活样式 */
-.theme-toggle.downlight-active {
-    animation: buttonGlow 2.5s ease-in-out infinite;
+    animation: downlightRing 3s ease-in-out infinite;
 }
 
 /* 动画 */
-@keyframes sourcePulse {
+@keyframes downlightPulse {
     0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
     50% { opacity: 1; transform: translateX(-50%) scale(1.12); }
 }
 
-@keyframes ringPulse {
+@keyframes downlightRing {
     0%, 100% { opacity: 0.4; transform: translateX(-50%) scale(1); }
     50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
 }
 
-@keyframes buttonGlow {
-    0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 220, 0.3); }
-    50% { box-shadow: 0 0 50px rgba(255, 255, 220, 0.6); }
+/* 按钮激活样式 */
+.theme-toggle.downlight-active {
+    animation: buttonDownlightGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes buttonDownlightGlow {
+    0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 255, 220, 0.3)); }
+    50% { filter: drop-shadow(0 0 50px rgba(255, 255, 220, 0.6)); }
 }
 
 /* 响应式 */
