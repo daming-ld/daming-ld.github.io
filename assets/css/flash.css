@@ -28,10 +28,14 @@
     top: -10px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 10000;
+    z-index: 10001;
     pointer-events: none;
     width: 160px;
     height: 70px;
+}
+
+.downlight-overlay {
+    z-index: 9999;
 }
 
 .downlight-source__glow {
