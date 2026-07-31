@@ -16,8 +16,6 @@
     <link rel="preload" href="assets/css/style.css" as="style">
     <link rel="stylesheet" href="assets/css/style.css">
     
-    <!-- ===== 新增：筒灯样式 ===== -->
-    <link rel="stylesheet" href="assets/css/flash.css">
 </head>
 
 <body class="star-canvas-page">
@@ -53,9 +51,6 @@
                 <button class="bg-btn" data-bg="gradient" aria-label="渐变光晕背景" style="--dot-color: #C4956A;"><span class="bg-btn__dot"></span></button>
                 <button class="bg-btn" data-bg="clean" aria-label="极简纯白背景" style="--dot-color: #E8E4DD;"><span class="bg-btn__dot"></span></button>
             </div>
-            <button class="theme-toggle" type="button" aria-label="打开手电筒" aria-pressed="false" data-icon-sun="assets/icon/sun.svg" data-icon-moon="assets/icon/moon.svg">
-                <img class="theme-toggle__icon" src="assets/icon/moon.svg" alt="" aria-hidden="true">
-            </button>
         </nav>
     </header>
 
@@ -66,9 +61,6 @@
         </section>
     </main>
 
-    <!-- ===== 新增：筒灯JS ===== -->
-    <script src="assets/js/flash.js"></script>
-    
     <!-- 原有脚本 -->
     <script src="assets/js/theme.js" defer></script>
     <script src="assets/js/nav.js" defer></script>
@@ -132,25 +124,6 @@
             }
         })();
 
-        // ===== 新增：初始化筒灯 =====
-        document.addEventListener('DOMContentLoaded', function() {
-            // 等待 theme.js 执行完毕后再初始化筒灯
-            // 因为 theme.js 也绑定了 .theme-toggle 的点击事件
-            // 我们使用更安全的方式：在 theme.js 之后执行
-            setTimeout(function() {
-                if (typeof Downlight !== 'undefined') {
-                    Downlight.init({
-                        angle: 45,
-                        darkOpacity: 0.92,
-                        storageKey: 'downlight-mode'
-                    });
-                }
-            }, 300);
-        });
-
-        // ===== 或者覆盖 theme.js 的 toggle 逻辑 =====
-        // 方案：保留 theme.js 的逻辑不变，但让筒灯使用独立的按钮
-        // 但由于同一个按钮被两个脚本控制，我们需要协调
     </script>
 </body>
 
