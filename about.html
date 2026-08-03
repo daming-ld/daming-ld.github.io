@@ -18,37 +18,7 @@
 </head>
 
 <body class="star-canvas-page">
-  <svg class="liquid-glass-defs" aria-hidden="true" width="0" height="0" focusable="false">
-    <defs>
-      <filter id="liquid-glass-distortion" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
-        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="1" seed="7" result="noise" />
-        <feGaussianBlur in="noise" stdDeviation="0.8" result="soft-noise" />
-        <feDisplacementMap in="SourceGraphic" in2="soft-noise" scale="14" xChannelSelector="R" yChannelSelector="G" result="distorted" />
-        <feGaussianBlur in="distorted" stdDeviation="0.2" result="smoothed" />
-        <feComposite in="smoothed" in2="SourceAlpha" operator="in" />
-      </filter>
-    </defs>
-  </svg>
-  <header class="site-header">
-    <nav class="nav">
-      <button class="top-btn" type="button" aria-label="回到顶部">
-        <img class="top-btn__icon" src="assets/icon/top.svg" alt="" aria-hidden="true">
-      </button>
-      <div class="nav-links">
-        <a href="index.html">首页</a>
-        <a href="about.html" class="active">关于</a>
-        <a href="projects.html">项目</a>
-        <a href="posts.html">文章</a>
-        <div class="nav-indicator"></div>
-      </div>
-      <span class="nav-reading-title"></span>
-      <div class="bg-selector" hidden>
-        <button class="bg-btn" data-bg="paper" aria-label="纸张纹理背景" style="--dot-color: #E2D8CA;"><span class="bg-btn__dot"></span></button>
-        <button class="bg-btn" data-bg="gradient" aria-label="渐变光晕背景" style="--dot-color: #C4956A;"><span class="bg-btn__dot"></span></button>
-        <button class="bg-btn" data-bg="clean" aria-label="极简纯白背景" style="--dot-color: #E8E4DD;"><span class="bg-btn__dot"></span></button>
-      </div>
-    </nav>
-  </header>
+  <div data-site-nav></div>
 
   <main class="about-page">
     <section class="about-hero" id="about-hero" aria-labelledby="about-title">
@@ -117,6 +87,7 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js" defer></script>
   <script src="assets/js/theme.js" defer></script>
+  <script src="assets/js/nav-component.js" defer></script>
   <script src="assets/js/nav.js" defer></script>
   <script src="assets/js/prefetch.js" defer></script>
   <script src="assets/js/about.js" defer></script>
