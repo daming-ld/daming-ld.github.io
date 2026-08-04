@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="zh-CN" data-theme="light">
-
 <head>
     <meta charset="UTF-8">
     <title>文章列表 | Daming</title>
@@ -32,7 +31,7 @@
                     </form>
                     <p class="post-search__status" id="post-search-status" aria-live="polite"></p>
 
-                    
+                    <ul class="post-list" id="post-list" aria-label="文章列表"></ul>
 
                     <nav class="post-pagination" id="post-pagination" aria-label="文章分页" hidden>
                         <button class="post-pagination__button post-pagination__button--prev" id="post-pagination-prev" type="button">上一页</button>
@@ -56,7 +55,9 @@
                 <aside class="glass-card page-aside-card">
                     <h2>标签</h2>
                     <div class="page-content">
-                        
+                        <div class="tags-list" id="tag-list"></div>
+                    </div>
+                </aside>
             </div>
         </div>
     </div>
@@ -66,10 +67,10 @@
     <script src="assets/js/nav.js" defer></script>
     <script src="assets/js/prefetch.js" defer></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', async function () {
             const scrollContainer = document.getElementById('tags-scroll');
-            const tagItems = document.querySelectorAll('.tag-list-item');
-            const postItems = document.querySelectorAll('.post-item');
+            let tagItems = document.querySelectorAll('.tag-list-item');
+            let postItems = document.querySelectorAll('.post-item');
             const asideTitle = document.querySelector('.page-aside-card h2');
             const postCount = document.getElementById('post-count');
             const latestDate = document.getElementById('latest-date');
@@ -86,6 +87,152 @@
             const contextStorageKey = 'post-list-context';
             let activeTag = null;
             let currentPage = 1;
+
+            const POST_FILES = [
+                '2026-07-19-真理通途.md',
+                '2026-05-21-世界的真理_V1.md',
+                '2026-05-11-黑洞吞噬天地真菌.md',
+                '2026-04-11-岩主天星座下没钱弟子.md',
+                '2025-12-18-掐头去尾第一篇.md',
+                '2025-12-11-未命名.md',
+                '2025-12-07-强风背头第四篇.md',
+                '2025-11-25-酒后胡言第二篇.md',
+                '2025-11-20-机械飞升第三篇.md'
+            ];
+
+            function parsePostMarkdown(text) {
+                const parsed = { title: '', date: '', tags: [], content: text };
+                const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/.exec(text);
+                if (!match) return parsed;
+                parsed.content = match[2];
+                match[1].split(/\r?\n/).forEach(function (line) {
+                    const colon = line.indexOf(':');
+                    if (colon <= 0) return;
+                    const key = line.slice(0, colon).trim();
+                    let value = line.slice(colon + 1).trim().replace(/^["']|["']$/g, '').trim();
+                    if (key === 'title') {
+                        parsed.title = value;
+                    } else if (key === 'date') {
+                        parsed.date = value.slice(0, 10);
+                    } else if (key === 'tags' || key === 'categories') {
+                        value.split(/[,，、\s]+/).forEach(function (tag) {
+                            tag = tag.trim();
+                            if (tag && parsed.tags.indexOf(tag) === -1) { parsed.tags.push(tag); }
+                        });
+                    }
+                });
+                return parsed;
+            }
+
+            function extractExcerpt(content) {
+                const paragraphs = content.split(/\r?\n\s*\r?\n/);
+                let fallback = '';
+                for (let i = 0; i < paragraphs.length; i++) {
+                    const lines = paragraphs[i].split(/\r?\n/).map(function (line) {
+                        return line
+                            .replace(/^#{1,6}\s*/, '')
+                            .replace(/^>\s?/, '')
+                            .replace(/^[-*+]\s+/, '')
+                            .replace(/^\d+[.、)]\s*/, '')
+                            .replace(/[*_~`]/g, '')
+                            .trim();
+                    }).filter(Boolean);
+                    if (!lines.length) continue;
+                    const text = lines.join(' ');
+                    if (!fallback) { fallback = text; }
+                    if (text.length >= 10) {
+                        return text.length > 130 ? text.slice(0, 130).replace(/\s+\S*$/, '') + '……' : text;
+                    }
+                }
+                return fallback.length > 130 ? fallback.slice(0, 130).replace(/\s+\S*$/, '') + '……' : fallback;
+            }
+
+            function formatPostDate(dateStr) {
+                if (!dateStr) return '';
+                const parts = String(dateStr).split('-');
+                return (parts[0] || '') + '年' + (parts[1] || '01') + '月' + (parts[2] || '01') + '日';
+            }
+
+            function renderPost(post) {
+                const list = document.getElementById('post-list');
+                if (!list) return;
+                const item = document.createElement('li');
+                item.className = 'post-item';
+                item.setAttribute('data-title', post.title);
+                item.setAttribute('data-author', post.author || '');
+                item.setAttribute('data-tags', post.tags.join(','));
+                const link = document.createElement('a');
+                link.href = 'post.html?file=' + encodeURIComponent(post.file);
+                const title = document.createElement('div');
+                title.className = 'post-title';
+                title.textContent = post.title;
+                link.appendChild(title);
+                const meta = document.createElement('div');
+                meta.className = 'post-meta';
+                const time = document.createElement('time');
+                time.className = 'post-date';
+                time.textContent = formatPostDate(post.date);
+                meta.appendChild(time);
+                if (post.author) {
+                    const authorSpan = document.createElement('span');
+                    authorSpan.className = 'post-author';
+                    authorSpan.textContent = ' · ' + post.author;
+                    meta.appendChild(authorSpan);
+                }
+                link.appendChild(meta);
+                if (post.excerpt) {
+                    const excerpt = document.createElement('p');
+                    excerpt.className = 'post-excerpt';
+                    excerpt.textContent = post.excerpt;
+                    link.appendChild(excerpt);
+                }
+                item.appendChild(link);
+                list.appendChild(item);
+            }
+
+            function renderTagList(tagCounts) {
+                const container = document.getElementById('tag-list');
+                if (!container) return;
+                Object.keys(tagCounts).sort().forEach(function (tag) {
+                    const chip = document.createElement('button');
+                    chip.type = 'button';
+                    chip.className = 'tag-list-item';
+                    chip.setAttribute('data-tag', tag);
+                    chip.textContent = tag;
+                    container.appendChild(chip);
+                });
+            }
+
+            async function loadPosts() {
+                const list = document.getElementById('post-list');
+                if (!list) return;
+                const posts = [];
+                const tagCounts = {};
+                await Promise.all(POST_FILES.map(function (file) {
+                    return fetch('_posts/' + encodeURIComponent(file), { cache: 'no-cache' }).then(function (response) {
+                        if (!response.ok) return null;
+                        return response.text();
+                    }).catch(function () { return null; });
+                })).then(function (results) {
+                    results.forEach(function (text, index) {
+                        if (!text) return;
+                        const file = POST_FILES[index];
+                        const parsed = parsePostMarkdown(text);
+                        const post = {
+                            file: file,
+                            title: parsed.title || file.replace(/^\d{4}-\d{2}-\d{2}-/, '').replace(/\.md$/, ''),
+                            date: parsed.date,
+                            tags: parsed.tags,
+                            excerpt: extractExcerpt(parsed.content)
+                        };
+                        posts.push(post);
+                        parsed.tags.forEach(function (tag) { tagCounts[tag] = (tagCounts[tag] || 0) + 1; });
+                    });
+                });
+                posts.sort(function (a, b) { return b.date.localeCompare(a.date); });
+                posts.forEach(renderPost);
+                renderTagList(tagCounts);
+            }
 
             function updateTagHighlights() {
                 tagItems.forEach(function (item) {
@@ -151,6 +298,10 @@
                 if (nextPageButton) { nextPageButton.disabled = currentPage === totalPages || totalPages === 0; }
                 saveContext(matchingPosts);
             }
+
+            await loadPosts();
+            tagItems = document.querySelectorAll('.tag-list-item');
+            postItems = document.querySelectorAll('.post-item');
 
             if (scrollContainer) {
                 const totalTags = 0;

@@ -1282,6 +1282,13 @@ html[data-theme=light][data-bg=clean] {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.6);
 }
+.post-item .post-excerpt {
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 8px 0 0;
+  overflow-wrap: break-word;
+}
 
 .post-meta {
   font-size: 13px;
@@ -2544,6 +2551,7 @@ html[data-theme=light] .post-card .post-meta,
 html[data-theme=light] .post-card .post-toc .toc-title,
 html[data-theme=light] .post-sidebar-card .post-toc .toc-title,
 html[data-theme=light] .post-item .post-meta,
+html[data-theme=light] .post-item .post-excerpt,
 html[data-theme=light] .post-card .post-toc a,
 html[data-theme=light] .post-sidebar-card .post-toc a,
 html[data-theme=light] .post-card .post-nav a,
@@ -2553,6 +2561,7 @@ body.theme-light .post-card .post-meta,
 body.theme-light .post-card .post-toc .toc-title,
 body.theme-light .post-sidebar-card .post-toc .toc-title,
 body.theme-light .post-item .post-meta,
+body.theme-light .post-item .post-excerpt,
 body.theme-light .post-card .post-toc a,
 body.theme-light .post-sidebar-card .post-toc a,
 body.theme-light .post-card .post-nav a,
@@ -6439,6 +6448,13 @@ html[data-theme=light][data-bg=clean] {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.6);
 }
+.post-item .post-excerpt {
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 8px 0 0;
+  overflow-wrap: break-word;
+}
 
 .post-meta {
   font-size: 13px;
@@ -7701,6 +7717,7 @@ html[data-theme=light] .post-card .post-meta,
 html[data-theme=light] .post-card .post-toc .toc-title,
 html[data-theme=light] .post-sidebar-card .post-toc .toc-title,
 html[data-theme=light] .post-item .post-meta,
+html[data-theme=light] .post-item .post-excerpt,
 html[data-theme=light] .post-card .post-toc a,
 html[data-theme=light] .post-sidebar-card .post-toc a,
 html[data-theme=light] .post-card .post-nav a,
@@ -7710,6 +7727,7 @@ body.theme-light .post-card .post-meta,
 body.theme-light .post-card .post-toc .toc-title,
 body.theme-light .post-sidebar-card .post-toc .toc-title,
 body.theme-light .post-item .post-meta,
+body.theme-light .post-item .post-excerpt,
 body.theme-light .post-card .post-toc a,
 body.theme-light .post-sidebar-card .post-toc a,
 body.theme-light .post-card .post-nav a,

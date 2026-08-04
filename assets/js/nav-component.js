@@ -41,11 +41,23 @@
         return null;
     }
 
+    function isPostDetailPage() {
+        const pathname = normalizePath(window.location.pathname || '');
+        const last = pathname.split('/').filter(Boolean).pop() || 'index.html';
+        if (last !== 'post.html') return false;
+        try {
+            return !!(window.location.search && new URLSearchParams(window.location.search).get('file'));
+        } catch (error) {
+            return false;
+        }
+    }
+
     function renderHeader() {
         const mountPoint = document.querySelector('[data-site-nav]');
         if (!mountPoint) return;
 
         const activeHref = getActiveHref();
+        const postPage = isPostDetailPage();
 
         mountPoint.innerHTML = `
             <svg class="liquid-glass-defs" aria-hidden="true" width="0" height="0" focusable="false">
@@ -61,7 +73,7 @@
             </svg>
             <header class="site-header">
                 <nav class="nav">
-                    <button class="top-btn" type="button" aria-label="回到顶部">
+                    <button class="top-btn${postPage ? ' post-back-btn' : ''}" type="button" aria-label="${postPage ? '返回文章列表' : '回到顶部'}"${postPage ? ' data-back-url="posts.html"' : ''}>
                         <img class="top-btn__icon" src="assets/icon/top.svg" alt="" aria-hidden="true">
                     </button>
                     <button class="theme-toggle" type="button" aria-label="切换主题">

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <title>文章 | Daming</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        (function () {
+            try {
+                var bg = localStorage.getItem('site-bg');
+                if (bg) document.documentElement.setAttribute('data-bg', bg);
+            } catch (e) { }
+        })();
+    </script>
+    <link rel="preload" href="assets/css/style.css" as="style">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body class="star-canvas-page" data-section="posts">
+    <div data-site-nav></div>
+
+    <div class="page-container">
+        <div class="page-shell">
+            <article class="glass-card post-card">
+                <header class="post-header">
+                    <h1 id="post-title">加载中……</h1>
+                    <div class="post-meta" id="post-meta"></div>
+                    <div class="post-tags" id="post-tags"></div>
+                </header>
+                <div class="post-content" id="post-content"></div>
+            </article>
+        </div>
+    </div>
+
+    <script src="assets/js/theme.js" defer></script>
+    <script src="assets/js/nav-component.js" defer></script>
+    <script src="assets/js/nav.js" defer></script>
+    <script src="assets/js/prefetch.js" defer></script>
+    <script>
+        (function () {
+            function escapeHtml(str) {
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+
+            function inline(text) {
+                var out = escapeHtml(text);
+                out = out.replace(/`([^`]+)`/g, function (match, code) { return '<code>' + code + '</code>'; });
+                out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+                out = out.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+                out = out.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+                out = out.replace(/(^|\s)_([^_]+)_(?=[\s。，、；：？！,.!?]|$)/g, '$1<em>$2</em>');
+                out = out.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+                return out;
+            }
+
+            function markdownToHtml(src) {
+                var lines = String(src || '').replace(/\r\n/g, '\n').split('\n');
+                var html = [];
+                var openLists = [];
+                var i = 0;
+
+                function closeLists() {
+                    while (openLists.length) {
+                        html.push('</li>');
+                        html.push('</' + openLists.pop() + '>');
+                    }
+                }
+
+                function closeDeeperLists(indent) {
+                    while (openLists.length && openLists[openLists.length - 1].indent > indent) {
+                        html.push('</li>');
+                        html.push('</' + openLists.pop().tag + '>');
+                    }
+                }
+
+                while (i < lines.length) {
+                    var line = lines[i];
+
+                    if (/^```/.test(line)) {
+                        closeLists();
+                        html.push('<pre><code>');
+                        i++;
+                        while (i < lines.length && !/^```/.test(lines[i])) {
+                            html.push(escapeHtml(lines[i]));
+                            if (i < lines.length - 1) html.push('\n');
+                            i++;
+                        }
+                        i++;
+                        html.push('</code></pre>');
+                        continue;
+                    }
+
+                    if (/^(?:-{3,}|\*{3,}|_{3,})\s*$/.test(line)) {
+                        closeLists();
+                        html.push('<hr>');
+                        i++;
+                        continue;
+                    }
+
+                    var heading = /^(#{1,6})\s+(.*)$/.exec(line);
+                    if (heading) {
+                        closeLists();
+                        var level = heading[1].length;
+                        html.push('<h' + level + '>' + inline(heading[2]) + '</h' + level + '>');
+                        i++;
+                        continue;
+                    }
+
+                    if (/^>\s?/.test(line)) {
+                        closeLists();
+                        html.push('<blockquote>');
+                        while (i < lines.length && /^>\s?/.test(lines[i])) {
+                            var quoteLine = lines[i].replace(/^>\s?/, '');
+                            if (quoteLine.trim()) {
+                                html.push('<p>' + inline(quoteLine) + '</p>');
+                            }
+                            i++;
+                        }
+                        html.push('</blockquote>');
+                        continue;
+                    }
+
+                    var ul = /^([ \t]*)[-*+]\s+(.*)$/.exec(line);
+                    var ol = /^([ \t]*)(\d+)[.、)]\s+(.*)$/.exec(line);
+                    if (ul || ol) {
+                        var indent = (ul ? ul[1] : ol[1]).length;
+                        var tag = ul ? 'ul' : 'ol';
+                        var content = ul ? ul[2] : ol[3];
+                        closeDeeperLists(indent);
+                        var top = openLists[openLists.length - 1];
+                        if (!top || top.tag !== tag || top.indent !== indent) {
+                            html.push('<' + tag + '>');
+                            openLists.push({ tag: tag, indent: indent });
+                        }
+                        html.push('<li>' + inline(content));
+                        i++;
+                        while (i < lines.length) {
+                            var next = lines[i];
+                            if (/^([ \t]*)[-*+]\s+/.test(next) || /^([ \t]*)(\d+)[.、)]\s+/.test(next)) break;
+                            if (/^#{1,6}\s/.test(next) || /^>\s?/.test(next) || /^(?:-{3,}|\*{3,}|_{3,})\s*$/.test(next) || /^```/.test(next) || next.trim() === '') break;
+                            html.push('<br>' + inline(next));
+                            i++;
+                        }
+                        continue;
+                    }
+
+                    if (/^\s*$/.test(line)) {
+                        closeLists();
+                        i++;
+                        continue;
+                    }
+
+                    closeLists();
+                    var paragraph = [];
+                    while (i < lines.length) {
+                        var pLine = lines[i];
+                        if (/^\s*$/.test(pLine)) break;
+                        if (/^#{1,6}\s/.test(pLine) || /^>\s?/.test(pLine) || /^```/.test(pLine)) break;
+                        if (/^([ \t]*)[-*+]\s+/.test(pLine) || /^([ \t]*)(\d+)[.、)]\s+/.test(pLine)) break;
+                        if (/^(?:-{3,}|\*{3,}|_{3,})\s*$/.test(pLine)) break;
+                        paragraph.push(inline(pLine));
+                        i++;
+                    }
+                    if (paragraph.length) {
+                        html.push('<p>' + paragraph.join('<br>') + '</p>');
+                    }
+                }
+
+                closeLists();
+                return html.join('');
+            }
+
+            function parsePostMarkdown(text) {
+                var parsed = { title: '', date: '', author: '', tags: [], content: text };
+                var match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/.exec(text);
+                if (!match) return parsed;
+                parsed.content = match[2];
+                match[1].split(/\r?\n/).forEach(function (line) {
+                    var colon = line.indexOf(':');
+                    if (colon <= 0) return;
+                    var key = line.slice(0, colon).trim();
+                    var value = line.slice(colon + 1).trim().replace(/^["']|["']$/g, '').trim();
+                    if (key === 'title') parsed.title = value;
+                    else if (key === 'date') parsed.date = value.slice(0, 10);
+                    else if (key === 'author') parsed.author = value;
+                    else if (key === 'tags' || key === 'categories') {
+                        value.split(/[,，、\s]+/).forEach(function (t) {
+                            t = t.trim();
+                            if (t && parsed.tags.indexOf(t) === -1) parsed.tags.push(t);
+                        });
+                    }
+                });
+                return parsed;
+            }
+
+            function formatPostDate(dateStr) {
+                if (!dateStr) return '';
+                var parts = String(dateStr).split('-');
+                return (parts[0] || '') + '年' + (parts[1] || '01') + '月' + (parts[2] || '01') + '日';
+            }
+
+            function renderPost(post) {
+                var title = document.getElementById('post-title');
+                var meta = document.getElementById('post-meta');
+                var tags = document.getElementById('post-tags');
+                var content = document.getElementById('post-content');
+
+                document.title = (post.title ? post.title + ' | ' : '') + 'Daming';
+                if (title) { title.textContent = post.title || '未命名'; }
+                var readingTitle = document.querySelector('.nav-reading-title');
+                if (readingTitle) { readingTitle.textContent = post.title || ''; }
+                if (meta) {
+                    var text = formatPostDate(post.date);
+                    if (post.author) { text += (text ? ' · ' : '') + '作者：' + post.author; }
+                    meta.textContent = text;
+                }
+                if (tags) {
+                    tags.textContent = '';
+                    post.tags.forEach(function (tag) {
+                        var span = document.createElement('span');
+                        span.className = 'tag';
+                        span.textContent = tag;
+                        tags.appendChild(span);
+                    });
+                }
+                if (content) {
+                    content.innerHTML = markdownToHtml(post.content);
+                }
+            }
+
+            function loadPost() {
+                var file = '';
+                try {
+                    file = new URLSearchParams(window.location.search).get('file') || '';
+                } catch (error) { }
+
+                var title = document.getElementById('post-title');
+                if (title) { title.textContent = file ? '加载中……' : '未找到文章'; }
+
+                if (!file) return;
+
+                fetch('_posts/' + file, { cache: 'no-cache' })
+                    .then(function (response) {
+                        if (!response.ok) { throw new Error('not found'); }
+                        return response.text();
+                    })
+                    .then(function (text) {
+                        renderPost(parsePostMarkdown(text));
+                    })
+                    .catch(function () {
+                        if (title) { title.textContent = '文章不存在'; }
+                        var meta = document.getElementById('post-meta');
+                        if (meta) { meta.textContent = '请从文章列表选择一个文章查看。'; }
+                    });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', loadPost, { once: true });
+            } else {
+                loadPost();
+            }
+        })();
+    </script>
+</body>
+
+</html>

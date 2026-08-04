@@ -1,0 +1,13 @@
+title: 我的博客          # 网站标题，会显示在浏览器标签栏
+description: 这是我的个人博客  # 网站简短描述
+baseurl: ""            # 如果项目部署在子目录下才需要填写，通常留空
+url: "https://你的用户名.github.io" # 你的 GitHub Pages 地址
+
+# 主题设置（如果使用远程主题或默认主题）
+theme: minima          # 如果你用的是 minima 主题，保留此项
+# 如果用的是远程主题，则可能是 remote_theme: 用户名/仓库名
+
+# 插件设置
+plugins:
+  - jekyll-feed        # 生成 RSS 订阅源
+  - jekyll-seo-tag     # 优化 SEO 信息
