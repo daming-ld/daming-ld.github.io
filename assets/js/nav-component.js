@@ -76,7 +76,7 @@
                     <button class="top-btn${postPage ? ' post-back-btn' : ''}" type="button" aria-label="${postPage ? '返回文章列表' : '回到顶部'}"${postPage ? ' data-back-url="posts.html"' : ''}>
                         <img class="top-btn__icon" src="assets/icon/top.svg" alt="" aria-hidden="true">
                     </button>
-                    <button class="theme-toggle" type="button" aria-label="切换主题">
+                    <button class="theme-toggle" type="button" aria-label="切换主题" aria-pressed="false">
                         <img class="theme-toggle__icon" src="assets/icon/sun.svg" alt="" aria-hidden="true">
                     </button>
                     <div class="nav-links">

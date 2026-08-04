@@ -3788,64 +3788,6 @@ body.theme-light .link:visited {
   border: 1px solid var(--light-glass-border);
 }
 
-.flashlight-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1001;
-  pointer-events: none;
-  background: conic-gradient(
-    from 180deg at 50% 0,
-    transparent        0deg,
-    transparent        6deg,
-    rgba(0,0,0,0.05)   8deg,
-    rgba(0,0,0,0.15)  10deg,
-    rgba(0,0,0,0.30)  12deg,
-    rgba(0,0,0,0.50)  14deg,
-    rgba(0,0,0,0.70)  16deg,
-    rgba(0,0,0,0.85)  18deg,
-    rgba(0,0,0,0.95)  20deg,
-    black              22deg,
-    black             338deg,
-    rgba(0,0,0,0.95) 340deg,
-    rgba(0,0,0,0.85) 342deg,
-    rgba(0,0,0,0.70) 344deg,
-    rgba(0,0,0,0.50) 346deg,
-    rgba(0,0,0,0.30) 348deg,
-    rgba(0,0,0,0.15) 350deg,
-    rgba(0,0,0,0.05) 352deg,
-    transparent      354deg,
-    transparent      360deg
-  );
-}
-
-.flashlight-mode .theme-toggle {
-  width: 44px;
-  height: 44px;
-  margin: 0;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border-radius: 999px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-.flashlight-mode .theme-toggle__icon {
-  width: 26px;
-  height: 26px;
-  display: block;
-  object-fit: contain;
-  pointer-events: none;
-}
-
-.fl-placeholder {
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
 html[data-theme=light] {
   --about-accent-secondary: #5f7d78;
   --about-card-shadow: 0 18px 45px rgba(44, 36, 32, 0.08);
@@ -9006,64 +8948,6 @@ body.theme-light .link:visited {
   border: 1px solid var(--light-glass-border);
 }
 
-.flashlight-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1001;
-  pointer-events: none;
-  background: conic-gradient(
-    from 180deg at 50% 0,
-    transparent        0deg,
-    transparent        6deg,
-    rgba(0,0,0,0.05)   8deg,
-    rgba(0,0,0,0.15)  10deg,
-    rgba(0,0,0,0.30)  12deg,
-    rgba(0,0,0,0.50)  14deg,
-    rgba(0,0,0,0.70)  16deg,
-    rgba(0,0,0,0.85)  18deg,
-    rgba(0,0,0,0.95)  20deg,
-    black              22deg,
-    black             338deg,
-    rgba(0,0,0,0.95) 340deg,
-    rgba(0,0,0,0.85) 342deg,
-    rgba(0,0,0,0.70) 344deg,
-    rgba(0,0,0,0.50) 346deg,
-    rgba(0,0,0,0.30) 348deg,
-    rgba(0,0,0,0.15) 350deg,
-    rgba(0,0,0,0.05) 352deg,
-    transparent      354deg,
-    transparent      360deg
-  );
-}
-
-.flashlight-mode .theme-toggle {
-  width: 44px;
-  height: 44px;
-  margin: 0;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border-radius: 999px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-.flashlight-mode .theme-toggle__icon {
-  width: 26px;
-  height: 26px;
-  display: block;
-  object-fit: contain;
-  pointer-events: none;
-}
-
-.fl-placeholder {
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
 html[data-theme=light] {
   --about-accent-secondary: #5f7d78;
   --about-card-shadow: 0 18px 45px rgba(44, 36, 32, 0.08);
@@ -10434,93 +10318,6 @@ html[data-bg=gradient] .about-card::after {
 }
 
 /*# sourceMappingURL=style.css.map */
-/* 筒灯效果 - 使用SVG遮罩 */
-.flashlight-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 999;
-    pointer-events: none;
-}
-
-.downlight-svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-/* 遮罩中的锥体区域 - 让内容可见 */
-#downlight-mask rect {
-    fill: white;
-}
-
-/* 筒灯光源装饰 - 在屏幕顶部 */
-.flashlight-overlay::before {
-    content: '';
-    position: fixed;
-    top: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120px;
-    height: 60px;
-    background: radial-gradient(
-        ellipse at center,
-        rgba(255, 255, 220, 0.6) 0%,
-        rgba(255, 255, 220, 0.3) 30%,
-        rgba(255, 255, 220, 0.1) 60%,
-        transparent 80%
-    );
-    z-index: 1001;
-    pointer-events: none;
-    border-radius: 0 0 50% 50%;
-    animation: downlightPulse 2.5s ease-in-out infinite;
-}
-
-/* 筒灯装饰环 */
-.flashlight-overlay::after {
-    content: '';
-    position: fixed;
-    top: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 140px;
-    height: 30px;
-    border: 2px solid rgba(255, 255, 220, 0.2);
-    border-top: none;
-    border-radius: 0 0 50% 50%;
-    box-shadow: 0 0 30px rgba(255, 255, 220, 0.1);
-    z-index: 1000;
-    pointer-events: none;
-    animation: downlightRing 3s ease-in-out infinite;
-}
-
-@keyframes downlightPulse {
-    0%, 100% {
-        opacity: 0.8;
-        transform: translateX(-50%) scale(1);
-    }
-    50% {
-        opacity: 1;
-        transform: translateX(-50%) scale(1.1);
-    }
-}
-
-@keyframes downlightRing {
-    0%, 100% {
-        opacity: 0.3;
-        transform: translateX(-50%) scale(1);
-    }
-    50% {
-        opacity: 0.6;
-        transform: translateX(-50%) scale(1.15);
-    }
-}
-
 /* 按钮激活样式 */
 .theme-toggle.downlight-active {
     position: relative;
@@ -10537,39 +10334,41 @@ html[data-bg=gradient] .about-card::after {
     }
 }
 
-/* 页面内容在筒灯照射下正常显示，其他区域暗化 */
-body.flashlight-mode {
-    background-color: rgba(0, 0, 0, 0.92);
+/* 主题切换放大镜（局部放大效果） */
+.magnifier-lens {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1005;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  overflow: hidden;
+  pointer-events: none;
+  background: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 0 0 3px rgba(0, 0, 0, 0.18),
+    0 12px 34px rgba(0, 0, 0, 0.4);
+  will-change: transform;
 }
-
-/* 确保所有内容在遮罩下正常显示，但被遮罩控制可见性 */
-body.flashlight-mode * {
-    /* 内容本身的样式不受影响，由SVG遮罩控制可见性 */
+.magnifier-lens__content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
 }
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-    .flashlight-overlay::before {
-        width: 80px;
-        height: 40px;
-    }
-    
-    .flashlight-overlay::after {
-        width: 100px;
-        height: 20px;
-    }
+@media (max-width: 720px) {
+  .magnifier-lens {
+    width: 168px;
+    height: 168px;
+  }
 }
-
-@media (max-width: 480px) {
-    .flashlight-overlay::before {
-        width: 60px;
-        height: 30px;
-    }
-    
-    .flashlight-overlay::after {
-        width: 80px;
-        height: 15px;
-    }
+@media (prefers-reduced-motion: reduce) {
+  .magnifier-lens {
+    display: none;
+  }
 }
 
 
