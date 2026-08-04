@@ -184,13 +184,13 @@
                     var colon = line.indexOf(':');
                     if (colon <= 0) return;
                     var key = line.slice(0, colon).trim();
-                    var value = line.slice(colon + 1).trim().replace(/^["']|["']$/g, '').trim();
+                    var value = line.slice(colon + 1).trim().replace(/^\[|\]$/g, '').replace(/^["']|["']$/g, '').trim();
                     if (key === 'title') parsed.title = value;
                     else if (key === 'date') parsed.date = value.slice(0, 10);
                     else if (key === 'author') parsed.author = value;
                     else if (key === 'tags' || key === 'categories') {
                         value.split(/[,，、\s]+/).forEach(function (t) {
-                            t = t.trim();
+                            t = t.trim().replace(/^["']|["']$/g, '');
                             if (t && parsed.tags.indexOf(t) === -1) parsed.tags.push(t);
                         });
                     }
