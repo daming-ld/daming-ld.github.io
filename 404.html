@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <title>404 | Daming</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    (function () {
+      try {
+        var bg = localStorage.getItem('site-bg');
+        if (bg) document.documentElement.setAttribute('data-bg', bg);
+      } catch (e) { }
+    })();
+  </script>
+  <link rel="preload" href="assets/css/style.css" as="style">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body class="star-canvas-page">
+  <div data-site-nav></div>
+
+  <main class="home-quote-shell">
+    <section class="glass-card home-quote-card not-found-card" aria-labelledby="not-found-title">
+      <p class="not-found-code" id="not-found-title">404</p>
+      <p class="not-found-hint">页面不存在，或你还没有解锁它的入口。</p>
+      <a class="not-found-back" href="index.html">返回首页</a>
+    </section>
+  </main>
+
+  <script src="assets/js/theme.js" defer></script>
+  <script src="assets/js/nav-component.js" defer></script>
+  <script src="assets/js/flashlight.js" defer></script>
+  <script src="assets/js/nav.js" defer></script>
+  <script src="assets/js/prefetch.js" defer></script>
+</body>
+
+</html>

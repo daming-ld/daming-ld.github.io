@@ -10382,7 +10382,25 @@ html[data-bg=gradient] .about-card::after {
 }
 
 .magnifier-lens .home-icon-list {
-  display: none !important;
+  display: none;
+}
+
+/* 放大镜开启时：图标行内其它图标不可误触，仅隐藏入口可交互 */
+body.magnifier-active .home-icon-list .home-icon-item:not(.home-icon-item--secret),
+html.magnifier-active .home-icon-list .home-icon-item:not(.home-icon-item--secret) {
+  pointer-events: none;
+}
+
+/* 彩蛋隐藏按钮：单纯不可见（保留可点击功能）；
+   需放大镜开启且 easterEnabled 为真时才可点击触发 */
+.home-icon-item--secret {
+  opacity: 0;
+}
+
+.home-icon-item--secret svg {
+  width: 30px;
+  height: 30px;
+  pointer-events: none;
 }
 
 .home-photo {
@@ -10478,9 +10496,135 @@ html[data-theme=light].easter-bg .home-quote-author {
   color: rgba(255, 255, 255, 0.78) !important;
 }
 
+.photo-grid-item--full .parallax {
+  height: 100%;
+}
+
 .photo-grid-item--full .parallax__inner {
   height: 100% !important;
   transform: translateY(0) !important;
+}
+
+.photographyImageGrid__rows {
+  row-gap: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .photo-grid-item--wide {
+    grid-column: 1 / -1;
+  }
+}
+
+.photographyImageGrid__row.cols-1 {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.photographyImageGrid__row.cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.photographyImageGrid__row.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 768px) {
+  .photographyImageGrid__row.cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.photographyImageGrid__divider {
+  align-items: center;
+  border-top: 1px solid currentColor;
+  color: rgba(244, 242, 236, 0.85);
+  display: flex;
+  font-size: 1.3rem;
+  font-weight: 400;
+  grid-column: 1 / -1;
+  letter-spacing: 0.5em;
+  margin: 6rem 0 0;
+  padding: 2.4rem 0 0;
+  text-transform: uppercase;
+}
+
+.photographyImageGridItem--fit {
+  align-items: center;
+  aspect-ratio: auto;
+  background: transparent;
+  cursor: grab;
+  display: flex;
+  justify-content: center;
+  min-height: var(--rowHeight);
+}
+
+.photographyImageGridItem--fit .photographyImageGridItem__image {
+  display: block;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.photographyImageGridItem--gif {
+  align-items: center;
+  aspect-ratio: auto;
+  background: transparent;
+  cursor: grab;
+  display: flex;
+  justify-content: center;
+  min-height: var(--rowHeight);
+}
+
+.photographyImageGridItem--gif .photographyImageGridItem__image {
+  max-height: 26rem;
+  max-width: 100%;
+  object-fit: contain;
+  width: auto;
+}
+
+@media (max-width: 768px) {
+  .photographyImageGridItem--gif .photographyImageGridItem__image {
+    max-height: 20rem;
+  }
+}
+
+/* 404 页面 */
+.not-found-card {
+  text-align: center;
+}
+
+.not-found-code {
+  color: rgba(255, 255, 255, 0.96);
+  font-size: clamp(3.4rem, 8vw, 7rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.not-found-hint {
+  color: rgba(255, 255, 255, 0.66);
+  font-size: clamp(1.05rem, 1.7vw, 1.6rem);
+  letter-spacing: 0.12em;
+  margin-top: 22px;
+}
+
+.not-found-back {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.9);
+  display: inline-flex;
+  font-size: 1rem;
+  letter-spacing: 0.18em;
+  margin-top: 34px;
+  padding: 12px 26px;
+  text-decoration: none;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.not-found-back:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 
