@@ -4026,6 +4026,16 @@ html[data-bg=gradient] .about-card::after {
   transform: translateZ(16px);
 }
 
+/* GSAP 动画运行期间移除卡片重滤镜（SVG 湍流位移 + 背景模糊），
+   避免滚动 pin/scrub 时逐帧重绘造成卡顿；非动画态保持原有视觉效果 */
+.about-page.is-gsap-ready .about-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.about-page.is-gsap-ready .about-card::before {
+  filter: none;
+}
+
 .about-card__number {
   display: block;
   margin-bottom: 44px;
