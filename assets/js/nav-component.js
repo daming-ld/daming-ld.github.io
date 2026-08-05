@@ -58,10 +58,10 @@
 
         const activeHref = getActiveHref();
         const postPage = isPostDetailPage();
-        const isHome = getCurrentPage() === 'index.html';
-        const easterBtn = isHome
-            ? '<button class="nav-easter-btn" id="navEasterBtn" type="button" aria-label="彩蛋"></button>'
-            : '';
+
+        // 彩蛋按钮在所有页面都渲染（视频占位），保持导航栏宽度一致；
+        // 仅首页绑定点击逻辑，其余页面为透明占位
+        const easterBtn = '<button class="nav-easter-btn" id="navEasterBtn" type="button" aria-label="彩蛋"></button>';
 
         mountPoint.innerHTML = `
             <svg class="liquid-glass-defs" aria-hidden="true" width="0" height="0" focusable="false">

@@ -10381,6 +10381,10 @@ html[data-bg=gradient] .about-card::after {
   display: flex;
 }
 
+.magnifier-lens .home-icon-list {
+  display: none !important;
+}
+
 .home-photo {
   display: block;
   width: auto;
@@ -10388,6 +10392,11 @@ html[data-bg=gradient] .about-card::after {
   max-width: min(266px, 58vw);
   max-height: 266px;
   object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.home-photo.is-loaded {
+  opacity: 1;
 }
 
 @media (max-width: 720px) {

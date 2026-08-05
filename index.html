@@ -134,7 +134,10 @@
 
                     function applyEaster(src, on) {
                         var photo = document.querySelector('.home-photo');
-                        if (photo) photo.setAttribute('src', src);
+                        if (photo) {
+                            photo.setAttribute('src', src);
+                            if (window.flashlightPhoto) window.flashlightPhoto.reveal(photo);
+                        }
                         document.documentElement.classList.toggle('easter-bg', on);
                         document.body.classList.toggle('easter-bg', on);
                         if (window.flashlightPhoto) {

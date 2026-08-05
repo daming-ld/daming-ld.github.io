@@ -54,6 +54,21 @@
         cloneHeader.style.webkitBackdropFilter = 'none';
     }
 
+    // 图片加载完成前保持隐藏，避免慢加载时露出空白
+    function revealImage(img) {
+        if (!img) return;
+        img.classList.remove('is-loaded');
+        img.onload = function () {
+            img.classList.add('is-loaded');
+        };
+        img.onerror = function () {
+            img.classList.add('is-loaded');
+        };
+        if (img.complete && img.naturalWidth > 0) {
+            img.classList.add('is-loaded');
+        }
+    }
+
     function buildLens() {
         var clone = document.body.cloneNode(true);
         removeNodes(clone.querySelectorAll(
@@ -74,6 +89,7 @@
         document.body.appendChild(lens);
 
         syncCloneHeader();
+        revealImage(content.querySelector('.home-photo'));
     }
 
     function measureLens() {
@@ -165,10 +181,14 @@
 
     // 供外部切换首页照片 src 与背景，若放大镜克隆存在则同步更新
     window.flashlightPhoto = {
+        reveal: revealImage,
         setSrc: function (src) {
             if (content) {
                 var el = content.querySelector('.home-photo');
-                if (el) el.setAttribute('src', src);
+                if (el) {
+                    el.setAttribute('src', src);
+                    revealImage(el);
+                }
             }
         },
         setEasterBg: function (on) {
