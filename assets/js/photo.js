@@ -304,9 +304,15 @@
     }, { passive: true });
   }
 
+  var pending = (typeof window.__photoDynamic === 'object' && typeof window.__photoDynamic.then === 'function')
+    ? window.__photoDynamic
+    : Promise.resolve();
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initPhotoGallery, { once: true });
+    document.addEventListener('DOMContentLoaded', function () {
+      pending.then(initPhotoGallery);
+    }, { once: true });
   } else {
-    initPhotoGallery();
+    pending.then(initPhotoGallery);
   }
 })();

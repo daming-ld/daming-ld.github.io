@@ -4719,7 +4719,7 @@ html[data-bg=gradient] .about-card::after {
 
 .photo-grid-section {
   --sideMargin: 4rem;
-  --columns: 8;
+  --columns: 4;
   --columnGap: 2rem;
   --rowHeight: 19.3rem;
   background: #000;
@@ -4787,7 +4787,7 @@ html[data-bg=gradient] .about-card::after {
   border: 0;
   cursor: grab;
   display: block;
-  grid-column: var(--photo-column)/span 1;
+  grid-column: var(--photo-column)/span var(--photo-span, 1);
   overflow: hidden;
   padding: 0;
   position: relative;
@@ -5094,7 +5094,7 @@ html[data-bg=gradient] .about-card::after {
   .photo-grid-section {
     --sideMargin: 1.6rem;
     --columnGap: 1.2rem;
-    --columns: 4;
+    --columns: 2;
     --rowHeight: 15.2rem;
     padding: 0 var(--sideMargin) 6rem;
   }
@@ -9877,7 +9877,7 @@ html[data-bg=gradient] .about-card::after {
 
 .photo-grid-section {
   --sideMargin: 4rem;
-  --columns: 8;
+  --columns: 4;
   --columnGap: 2rem;
   --rowHeight: 19.3rem;
   background: #000;
@@ -9945,7 +9945,7 @@ html[data-bg=gradient] .about-card::after {
   border: 0;
   cursor: grab;
   display: block;
-  grid-column: var(--photo-column)/span 1;
+  grid-column: var(--photo-column)/span var(--photo-span, 1);
   overflow: hidden;
   padding: 0;
   position: relative;
@@ -10252,7 +10252,7 @@ html[data-bg=gradient] .about-card::after {
   .photo-grid-section {
     --sideMargin: 1.6rem;
     --columnGap: 1.2rem;
-    --columns: 4;
+    --columns: 2;
     --rowHeight: 15.2rem;
     padding: 0 var(--sideMargin) 6rem;
   }
@@ -10476,6 +10476,11 @@ html[data-theme=light].easter-bg .home-quote-line {
 }
 html[data-theme=light].easter-bg .home-quote-author {
   color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.photo-grid-item--full .parallax__inner {
+  height: 100% !important;
+  transform: translateY(0) !important;
 }
 
 
