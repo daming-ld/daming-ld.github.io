@@ -58,6 +58,10 @@
 
         const activeHref = getActiveHref();
         const postPage = isPostDetailPage();
+        const isHome = getCurrentPage() === 'index.html';
+        const easterBtn = isHome
+            ? '<button class="nav-easter-btn" id="navEasterBtn" type="button" aria-label="彩蛋"></button>'
+            : '';
 
         mountPoint.innerHTML = `
             <svg class="liquid-glass-defs" aria-hidden="true" width="0" height="0" focusable="false">
@@ -86,6 +90,7 @@
                         }).join('')}
                         <div class="nav-indicator"></div>
                     </div>
+                    ${easterBtn}
                     <span class="nav-reading-title"></span>
                     <div class="bg-selector" hidden>
                         <button class="bg-btn" data-bg="paper" aria-label="纸张纹理背景" style="--dot-color: #E2D8CA;"><span class="bg-btn__dot"></span></button>

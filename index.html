@@ -25,6 +25,9 @@
         <section class="glass-card home-quote-card" aria-label="首页引言">
             <p class="home-quote-line" id="homeQuoteText" data-text="真理就是螺旋升天"></p>
             <p class="home-quote-author" id="homeQuoteAuthor" data-text="——Daming" data-photo-url="photo.html" role="link" tabindex="0" aria-label="查看 Daming 影像档案"></p>
+            <div class="home-photo-wrap">
+                <img class="home-photo" src="assets/photo/1.png" alt="Daming 影像" width="850" height="883" loading="lazy">
+            </div>
             <div class="home-icon-list" aria-label="快捷入口">
                 <button class="home-icon-item home-quote-refresh" id="homeQuoteRefresh" type="button" aria-label="换一句格言" title="换一句格言">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -118,6 +121,50 @@
 
                 if (refresh) {
                     refresh.addEventListener('click', showQuote);
+                }
+
+                var easterBtn = document.getElementById('navEasterBtn');
+                if (easterBtn) {
+                    var RAPID_MS = 600;
+                    var RAPID_NEED = 5;
+                    var lastClick = 0;
+                    var rapid = 0;
+                    var onTwo = false;
+                    var erotic = false;
+
+                    function applyEaster(src, on) {
+                        var photo = document.querySelector('.home-photo');
+                        if (photo) photo.setAttribute('src', src);
+                        document.documentElement.classList.toggle('easter-bg', on);
+                        document.body.classList.toggle('easter-bg', on);
+                        if (window.flashlightPhoto) {
+                            window.flashlightPhoto.setSrc(src);
+                            window.flashlightPhoto.setEasterBg(on);
+                        }
+                    }
+
+                    easterBtn.addEventListener('click', function () {
+                        var now = Date.now();
+                        rapid = (now - lastClick <= RAPID_MS) ? rapid + 1 : 1;
+                        lastClick = now;
+
+                        if (rapid >= RAPID_NEED) {
+                            erotic = true;
+                            rapid = 0;
+                            applyEaster('assets/photo/3.jpg', true);
+                            return;
+                        }
+
+                        if (erotic) {
+                            erotic = false;
+                            onTwo = !onTwo;
+                            applyEaster(onTwo ? 'assets/photo/2.jpg' : 'assets/photo/1.png', false);
+                            return;
+                        }
+
+                        onTwo = !onTwo;
+                        applyEaster(onTwo ? 'assets/photo/2.jpg' : 'assets/photo/1.png', false);
+                    });
                 }
 
                 var photoUrl = author.dataset.photoUrl || '';

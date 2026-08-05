@@ -2777,7 +2777,6 @@ body.theme-light .link:visited {
 
 .checkin-main-card {
   content-visibility: visible;
-  contain-intrinsic-size: auto;
   padding: 0 !important;
 }
 
@@ -5158,7 +5157,6 @@ html[data-bg=gradient] .about-card::after {
 }
 
 /*# sourceMappingURL=style.css.map */
-@charset "UTF-8";
 .liquid-glass {
   position: relative;
   overflow: hidden;
@@ -7937,7 +7935,6 @@ body.theme-light .link:visited {
 
 .checkin-main-card {
   content-visibility: visible;
-  contain-intrinsic-size: auto;
   padding: 0 !important;
 }
 
@@ -10369,6 +10366,107 @@ html[data-bg=gradient] .about-card::after {
   .magnifier-lens {
     display: none;
   }
+}
+
+/* 首页照片：默认隐藏，仅在放大镜（克隆内容）内可见 */
+.home-photo-wrap {
+  display: none;
+  margin: auto 0;
+  padding: 0;
+  width: 100%;
+  justify-content: center;
+}
+
+.magnifier-lens .home-photo-wrap {
+  display: flex;
+}
+
+.home-photo {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(266px, 58vw);
+  max-height: 266px;
+  object-fit: contain;
+}
+
+@media (max-width: 720px) {
+  .home-photo-wrap {
+    margin-top: 26px;
+    margin-bottom: auto;
+  }
+  .home-photo {
+    max-width: min(186px, 56vw);
+    max-height: 186px;
+  }
+}
+
+/* 首页彩蛋按钮：透明但可点击 */
+.nav-easter-btn {
+  flex-shrink: 0;
+  width: 18px;
+  height: 100%;
+  min-height: 40px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0;
+}
+
+/* 彩蛋背景：魅惑玫红色调，双色渐变呼吸变化 */
+body.easter-bg,
+html[data-theme=light][data-bg].easter-bg {
+  --light-page-bg: #C2185B !important;
+  background-color: #B80F5C;
+  background-image:
+    radial-gradient(120% 80% at 50% 0%, rgba(255, 150, 195, 0.26) 0%, rgba(255, 150, 195, 0) 50%),
+    radial-gradient(130% 100% at 50% 110%, rgba(120, 10, 60, 0.38) 0%, rgba(120, 10, 60, 0) 55%) !important;
+  background-size: auto !important;
+  animation: easterBgShift 4s ease-in-out infinite;
+}
+
+@keyframes easterBgShift {
+  0%, 100% {
+    background-color: #B80F5C;
+  }
+  50% {
+    background-color: #FF5FA8;
+  }
+}
+
+/* 彩蛋背景：导航栏同步变色 */
+html[data-theme=light].easter-bg .site-header {
+  background: rgba(216, 27, 96, 0.28);
+  border-bottom: 1px solid rgba(255, 170, 200, 0.4) !important;
+  box-shadow: 0 2px 24px rgba(142, 18, 80, 0.25) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  animation: easterHeaderShift 4s ease-in-out infinite;
+}
+
+@keyframes easterHeaderShift {
+  0%, 100% {
+    background-color: rgba(216, 27, 96, 0.28);
+  }
+  50% {
+    background-color: rgba(255, 95, 168, 0.42);
+  }
+}
+html[data-theme=light].easter-bg .site-header .nav a,
+html[data-theme=light].easter-bg .site-header .nav-reading-title {
+  color: rgba(255, 240, 245, 0.92) !important;
+}
+html[data-theme=light].easter-bg .site-header .nav-indicator {
+  background: rgba(255, 255, 255, 0.35) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: none !important;
+}
+html[data-theme=light].easter-bg .home-quote-line {
+  color: rgba(255, 255, 255, 0.96) !important;
+}
+html[data-theme=light].easter-bg .home-quote-author {
+  color: rgba(255, 255, 255, 0.78) !important;
 }
 
 

@@ -163,6 +163,21 @@
         });
     }
 
+    // 供外部切换首页照片 src 与背景，若放大镜克隆存在则同步更新
+    window.flashlightPhoto = {
+        setSrc: function (src) {
+            if (content) {
+                var el = content.querySelector('.home-photo');
+                if (el) el.setAttribute('src', src);
+            }
+        },
+        setEasterBg: function (on) {
+            if (!content) return;
+            var cloneBody = content.querySelector('body');
+            if (cloneBody) cloneBody.classList.toggle('easter-bg', !!on);
+        }
+    };
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init, { once: true });
     } else {
