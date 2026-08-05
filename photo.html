@@ -25,13 +25,13 @@
       <p class="photo-hero__intro">把停留过的画面，编排成一组可以慢慢翻阅的视觉笔记。</p>
       <div class="photo-hero__images" aria-hidden="true">
         <figure class="photo-hero__image photo-hero__image--1">
-          <img src="assets/images/photos/bg_1.webp" alt="" width="1024" height="1024" fetchpriority="high">
+          <img src="assets/photo/2.jpg" alt="" width="1024" height="1024" fetchpriority="high">
         </figure>
         <figure class="photo-hero__image photo-hero__image--2">
-          <img src="assets/images/photos/bg_2.webp" alt="" width="1024" height="1024" fetchpriority="auto">
+          <img src="assets/photo/2.jpg" alt="" width="1024" height="1024" fetchpriority="auto">
         </figure>
         <figure class="photo-hero__image photo-hero__image--3">
-          <img src="assets/images/photos/bg_3.webp" alt="" width="1024" height="1024" fetchpriority="auto">
+          <img src="assets/photo/2.jpg" alt="" width="1024" height="1024" fetchpriority="auto">
         </figure>
       </div>
       <p class="photo-hero__scroll">SCROLL TO EXPLORE <span aria-hidden="true">↓</span></p>
@@ -40,40 +40,40 @@
     <section class="photo-statement" aria-label="作品说明">
       <div class="photo-statement__background" data-photo-statement-background aria-hidden="true">
         <figure class="photo-statement__background-image" style="--photo-stack-index: 0">
-          <img src="assets/images/photos/bg_1.webp" alt="" width="1024" height="1024">
+          <img src="assets/photo/2.jpg" alt="" width="1024" height="1024">
         </figure>
         <div class="photo-statement__floating" data-photo-floating-layer="0">
           <figure class="photo-statement__floating-card photo-statement__floating-card--portrait" style="--photo-card-index: 0">
-            <img src="assets/images/photos/1.webp" alt="" width="1024" height="1024">
+            <img src="assets/photo/2.jpg" alt="" width="1024" height="1024">
           </figure>
           <figure class="photo-statement__floating-card photo-statement__floating-card--portrait" style="--photo-card-index: 1">
-            <img src="assets/images/photos/2.webp" alt="" width="1024" height="1024">
+            <img src="assets/photo/2.jpg" alt="" width="1024" height="1024">
           </figure>
         </div>
         <figure class="photo-statement__background-image" style="--photo-stack-index: 1">
-          <img src="assets/images/photos/bg_2.webp" alt="" width="1024" height="1024">
+          <img src="assets/photo/2.jpg" alt="" width="1024" height="1024">
         </figure>
         <div class="photo-statement__floating" data-photo-floating-layer="1">
           <figure class="photo-statement__floating-card photo-statement__floating-card--portrait" style="--photo-card-index: 0">
-            <img src="assets/images/photos/4.webp" alt="" width="1024" height="1024">
+            <img src="assets/photo/2.jpg" alt="" width="1024" height="1024">
           </figure>
           <figure class="photo-statement__floating-card photo-statement__floating-card--portrait" style="--photo-card-index: 1">
-            <img src="assets/images/photos/5.webp" alt="" width="1024" height="1024">
+            <img src="assets/photo/2.jpg" alt="" width="1024" height="1024">
           </figure>
         </div>
         <figure class="photo-statement__background-image" style="--photo-stack-index: 2">
-          <img src="assets/images/photos/bg_3.webp" alt="" width="1024" height="1024">
+          <img src="assets/photo/2.jpg" alt="" width="1024" height="1024">
         </figure>
         <div class="photo-statement__floating" data-photo-floating-layer="2">
           <figure class="photo-statement__floating-card photo-statement__floating-card--portrait" style="--photo-card-index: 0">
-            <img src="assets/images/photos/7.webp" alt="" width="1024" height="1024">
+            <img src="assets/photo/2.jpg" alt="" width="1024" height="1024">
           </figure>
           <figure class="photo-statement__floating-card photo-statement__floating-card--portrait" style="--photo-card-index: 1">
-            <img src="assets/images/photos/8.webp" alt="" width="1024" height="1024">
+            <img src="assets/photo/2.jpg" alt="" width="1024" height="1024">
           </figure>
         </div>
         <figure class="photo-statement__background-image photo-statement__background-image--type" style="--photo-stack-index: 3">
-          <img src="assets/images/photos/21.svg" alt="" width="1600" height="1200">
+          <img src="assets/photo/2.jpg" alt="" width="1600" height="1200">
         </figure>
       </div>
     </section>
@@ -116,6 +116,7 @@
   <script>
     (function () {
       var canvas = document.querySelector('[data-photo-canvas]');
+      var placeholderSrc = 'assets/photo/2.jpg';
       var fallbackFiles = ['4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.gif', '10.gif', '11.gif', '12.gif', '13.gif'];
       var knownDimensions = {
         '4.jpg': [850, 501],
@@ -129,6 +130,14 @@
         '12.gif': [260, 238],
         '13.gif': [150, 150]
       };
+
+      function swapWhenReady(image, src) {
+        if (!src || src === image.src) return;
+        var loader = new Image();
+        loader.onload = function () { image.src = src; };
+        loader.onerror = function () { image.src = src; };
+        loader.src = src;
+      }
 
       function makeCard(name, index) {
         var column = (index % 2 === 0) ? 1 : 3;
@@ -148,7 +157,7 @@
 
         var image = document.createElement('img');
         image.className = 'image useFade loaded photographyImageGridItem__image fill';
-        image.src = 'assets/getphoto/' + name;
+        image.src = placeholderSrc;
         image.alt = '';
         image.loading = 'lazy';
         image.draggable = 'false';
@@ -161,6 +170,7 @@
             if (image.naturalWidth) button.style.aspectRatio = image.naturalWidth + '/' + image.naturalHeight;
           });
         }
+        swapWhenReady(image, 'assets/getphoto/' + name);
 
         var parallaxInner = document.createElement('div');
         parallaxInner.className = 'parallax__inner';
@@ -195,9 +205,9 @@
         var hero = document.querySelectorAll('.photo-hero__image img');
         var bg = document.querySelectorAll('.photo-statement__background-image img');
         var cards = document.querySelectorAll('.photo-statement__floating-card img');
-        for (var i = 0; i < hero.length; i += 1) hero[i].src = get(i);
-        for (var i = 0; i < bg.length; i += 1) bg[i].src = get(i < 3 ? i : 3);
-        for (var i = 0; i < cards.length; i += 1) cards[i].src = get(4 + i);
+        for (var i = 0; i < hero.length; i += 1) swapWhenReady(hero[i], get(i));
+        for (var i = 0; i < bg.length; i += 1) swapWhenReady(bg[i], get(i < 3 ? i : 3));
+        for (var i = 0; i < cards.length; i += 1) swapWhenReady(cards[i], get(4 + i));
       }
 
       function build(list) {
@@ -218,6 +228,8 @@
         assignSlots(names);
       }
 
+      build(fallbackFiles);
+
       window.__photoDynamic = new Promise(function (resolve) {
         var settled = false;
         function finish() {
@@ -225,18 +237,21 @@
           settled = true;
           resolve();
         }
-        function apply(list) {
+        function refresh(data) {
           if (settled) return;
-          build(list);
+          var names = toNames(data);
+          var same = names.length === fallbackFiles.length &&
+            names.every(function (name, index) { return name === fallbackFiles[index]; });
+          if (!same && names.length) build(data);
         }
         fetch('https://api.github.com/repos/daming-ld/daming-ld.github.io/contents/assets/getphoto?ref=main', { cache: 'no-store' })
           .then(function (response) {
             if (!response.ok) throw new Error('http ' + response.status);
             return response.json();
           })
-          .then(function (data) { apply(data); finish(); })
-          .catch(function () { apply(fallbackFiles); finish(); });
-        setTimeout(function () { apply(fallbackFiles); finish(); }, 5000);
+          .then(function (data) { refresh(data); finish(); })
+          .catch(function () { finish(); });
+        setTimeout(finish, 5000);
       });
     })();
   </script>
