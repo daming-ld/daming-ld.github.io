@@ -5372,7 +5372,8 @@ html[data-theme=light].easter-bg .home-quote-author {
 }
 
 .photographyImageGrid__row.cols-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, max-content));
+  justify-content: center;
 }
 
 .photographyImageGrid__row.cols-3 {
@@ -5383,6 +5384,15 @@ html[data-theme=light].easter-bg .home-quote-author {
   .photographyImageGrid__row.cols-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+/* GIF 行独立排版：小尺寸动图按内容自适应、居中换行排列 */
+.photographyImageGrid__row--gif {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--columnGap);
+  justify-content: center;
 }
 
 .photographyImageGrid__divider {
@@ -5412,9 +5422,11 @@ html[data-theme=light].easter-bg .home-quote-author {
 .photographyImageGridItem--fit .photographyImageGridItem__image {
   display: block;
   height: auto;
+  margin-inline: auto;
+  max-height: 62vh;
   max-width: 100%;
   object-fit: contain;
-  width: 100%;
+  width: auto;
 }
 
 .photographyImageGridItem--gif {
@@ -5425,6 +5437,7 @@ html[data-theme=light].easter-bg .home-quote-author {
   display: flex;
   justify-content: center;
   min-height: var(--rowHeight);
+  width: auto;
 }
 
 .photographyImageGridItem--gif .photographyImageGridItem__image {

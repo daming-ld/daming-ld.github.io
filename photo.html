@@ -139,7 +139,27 @@
         '10.gif': [240, 240],
         '11.gif': [463, 412],
         '12.gif': [260, 238],
-        '13.gif': [150, 150]
+        '13.gif': [150, 150],
+        '0d5988703fec41e342100c2e08859f30.jpg': [2160, 3840],
+        '17b318f6d7ec22fb5e889c558efa674d.jpg': [1400, 2046],
+        '2b352abc32061b638acc505b267f8986.jpg': [1280, 1928],
+        '36fdd62a64bcd2dbc711747dcf8ea442.jpg': [2160, 3840],
+        '3d8be3acc2c36f0c29c470ae85a8d6a6.jpg': [1448, 2048],
+        '413b9bd576a23ba0ffe15a55256f7695.jpg': [2160, 3840],
+        '4e4fb493f69c8df5f2a66ca4243e09c9.jpg': [850, 1269],
+        '516e40cff81d64aa4a456b04a671c18b.jpg': [2160, 3840],
+        '60a6f76895c1bd9144afe35e5e8b25c4.jpg': [2160, 3840],
+        '6ef8a1a6be4caecca012ecd3d5e63aab.jpg': [2362, 4724],
+        '7151497cf280910e0575d63df67a4952.jpg': [862, 1825],
+        '74f7eab3406ddd2909c43829daa0bc20.jpg': [2160, 3840],
+        'a68f30ecd661bebc02c68f08f2ee454c.jpg': [2160, 3840],
+        'b4382be41e58424f6b5b1f2e2c83d3dc.jpg': [941, 1672],
+        'c75840fb6b30bf8be7b61768b7ba2121.jpg': [2160, 3840],
+        'd3b1dabf74997f2a14dbd930a9f4dea2.jpg': [5788, 8186],
+        'd3f2de4f04b4f397a15b78ce804fc379.jpg': [832, 1145],
+        'ddab407ba18d5708d4fa5c282a4637f8.jpg': [3394, 5733],
+        'e7679990866abaa572a546a5384a400a.jpg': [2160, 3840],
+        'fb1f08de8b6881064d135df8f7537c1f.jpg': [1280, 1856]
       };
 
       var displayOrder = ['4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.gif', '10.gif', '12.gif', '13.gif', '11.gif'];
@@ -228,14 +248,7 @@
             if (buffer.length === 2) flush();
           }
         }
-        if (buffer.length) {
-          var last = rows.length ? rows[rows.length - 1] : null;
-          if (buffer.length === 1 && last && !(allowSingles && !isTall(last[0])) && last.length < 3) {
-            last.push(buffer[0]);
-          } else {
-            rows.push(buffer);
-          }
-        }
+        flush();
         return rows;
       }
 
@@ -283,7 +296,14 @@
           divider.className = 'photographyImageGrid__divider';
           divider.textContent = 'GIF 动图';
           canvas.appendChild(divider);
-          groupRows(gifs, false).forEach(appendRow);
+
+          var gifRow = document.createElement('div');
+          gifRow.className = 'photographyImageGrid__row photographyImageGrid__row--gif';
+          gifs.forEach(function (name) {
+            gifRow.appendChild(makeCard(name, index, true));
+            index += 1;
+          });
+          canvas.appendChild(gifRow);
         }
 
         assignSlots(names);
