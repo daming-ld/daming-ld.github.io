@@ -281,10 +281,9 @@ html[data-theme=light][data-bg=clean] {
   position: fixed;
   --header-top: 16px;
   top: var(--header-top);
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(70% + 60px);
-  max-width: 1260px;
+  left: 16px;
+  right: 16px;
+  width: auto;
   z-index: 1000;
   overflow: hidden;
   border-radius: 34px;
@@ -3859,6 +3858,17 @@ html[data-theme=light][data-bg=gradient] {
   position: relative;
 }
 
+.about-hero__gif {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 220px;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
 .about-hero__kicker,
 .about-section-heading__eyebrow,
 .about-social__label {
@@ -4331,6 +4341,9 @@ html[data-bg=gradient] .about-card::after {
 @media (max-width: 900px) {
   .about-hero__title {
     font-size: 68px;
+  }
+  .about-hero__gif {
+    display: none;
   }
 }
 @media (max-width: 720px) {
