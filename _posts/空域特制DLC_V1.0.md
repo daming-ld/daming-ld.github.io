@@ -1,5 +1,5 @@
 ---
-title: "空域特制DLC V1"
+title: "空域特制DLC V1.0"
 date: 2026-08-03 00:00:00 +0800
 categories: blog
 category: （世界）合订本/DLC

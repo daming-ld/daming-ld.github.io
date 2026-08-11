@@ -1,5 +1,5 @@
 ---
-title: "角色DLC V1"
+title: "角色DLC V1.0"
 date: 2026-08-05 00:00:00 +0800
 categories: blog
 layout: post

@@ -37,14 +37,18 @@
   },
   {
     "file": "角色DLC_V1.0.md",
-    "title": "角色DLC V1",
+    "title": "角色DLC V1.0",
     "date": "2026-08-05",
-    "category": "",
-    "tags": []
+    "category": "（世界）合订本/DLC",
+    "tags": [
+      "设定",
+      "DLC",
+      "角色"
+    ]
   },
   {
     "file": "万古洪荒DLC_V1.0.md",
-    "title": "万古洪荒DLC V1",
+    "title": "万古洪荒DLC V1.0",
     "date": "2026-08-03",
     "category": "（世界）合订本/DLC",
     "tags": [
@@ -56,7 +60,7 @@
   },
   {
     "file": "灵魂工艺DLC_V1.0.md",
-    "title": "灵魂工艺DLC V1",
+    "title": "灵魂工艺DLC V1.0",
     "date": "2026-08-03",
     "category": "（世界）合订本/DLC",
     "tags": [
@@ -68,7 +72,7 @@
   },
   {
     "file": "真理通途DLC_V1.1.md",
-    "title": "真理通途DLC V1",
+    "title": "真理通途DLC V1.0",
     "date": "2026-08-03",
     "category": "（世界）合订本/DLC",
     "tags": [
@@ -80,7 +84,7 @@
   },
   {
     "file": "空域特制DLC_V1.0.md",
-    "title": "空域特制DLC V1",
+    "title": "空域特制DLC V1.0",
     "date": "2026-08-03",
     "category": "（世界）合订本/DLC",
     "tags": [

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Daming</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/gif" href="assets/icon/top.gif">
     <script>
         (function () {
             try {
@@ -62,11 +63,14 @@
     <script>
         // ===== 原有打字效果 =====
         (function () {
-            function typeText(element, text, speed, done) {
+            var typingToken = 0;
+
+            function typeText(element, text, speed, token, done) {
                 if (!element) return;
                 var index = 0;
                 element.textContent = '';
                 function step() {
+                    if (token !== typingToken) return;
                     if (index < text.length) {
                         element.textContent += text.charAt(index);
                         index += 1;
@@ -85,17 +89,17 @@
                 if (!quote || !author) return;
 
                 var quotes = [
-                    '吃得苦中苦，方得苦中苦。',
+                    '吃得苦中苦，方得苦中苦',
                     '发生了什么？',
-                    '眼不一定高，手不一定低。',
+                    '小怡，大伤，巨灰',
                     '谜语人滚出地球',
                     '真理就是螺旋升天',
                     '吃饱了才有哲学家，但吃太饱了就会变成伪人',
-                    '雪豹，闭嘴'
+                    '雪豹，闭嘴',
+                    '感谢pythonh的网页模板',
                 ];
 
                 var currentIndex = -1;
-                var typingToken = 0;
 
                 function pickQuote() {
                     var next = currentIndex;
@@ -112,11 +116,11 @@
                     author.dataset.text = author.dataset.text || '——Daming';
                     quote.textContent = '';
                     author.textContent = '';
-                    typeText(quote, quote.dataset.text || '', 90, function () {
+                    typeText(quote, quote.dataset.text || '', 90, token, function () {
                         if (token !== typingToken) return;
                         window.setTimeout(function () {
                             if (token !== typingToken) return;
-                            typeText(author, author.dataset.text || '', 75);
+                            typeText(author, author.dataset.text || '', 75, token);
                         }, 180);
                     });
                 }

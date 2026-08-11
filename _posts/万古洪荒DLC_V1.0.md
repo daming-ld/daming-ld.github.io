@@ -1,5 +1,5 @@
 ---
-title: "万古洪荒DLC V1"
+title: "万古洪荒DLC V1.0"
 date: 2026-08-03 00:00:00 +0800
 categories: blog
 category: （世界）合订本/DLC
