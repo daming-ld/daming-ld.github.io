@@ -315,9 +315,63 @@
     }, { once: true });
   }
 
+  function initHeroGif() {
+    var image = document.querySelector('.about-hero__gif');
+    if (!image || !image.dataset.src) return;
+
+    var swapped = false;
+    function swap() {
+      if (swapped || !image.dataset.src) return;
+      var src = image.dataset.src;
+      image.removeAttribute('data-src');
+      var probe = new Image();
+      probe.onload = function () {
+        image.src = src;
+        swapped = true;
+      };
+      probe.onerror = function () {
+        image.removeAttribute('data-src');
+      };
+      probe.src = src;
+    }
+
+    if (image.complete && image.naturalWidth > 0) {
+      var soon = function () {
+        var rect = image.getBoundingClientRect();
+        if (rect.bottom > 0 && rect.top < window.innerHeight) swap();
+      };
+      soon();
+      window.addEventListener('scroll', soon, { passive: true, once: true });
+      return;
+    }
+
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            observer.disconnect();
+            swap();
+          }
+        });
+      }, { rootMargin: '200px 0px' });
+      observer.observe(image);
+    } else {
+      window.addEventListener('scroll', function onScroll() {
+        var rect = image.getBoundingClientRect();
+        if (rect.bottom > 0 && rect.top < window.innerHeight) {
+          window.removeEventListener('scroll', onScroll);
+          swap();
+        }
+      }, { passive: true });
+      swap();
+    }
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initAboutAnimations, { once: true });
+    document.addEventListener('DOMContentLoaded', initHeroGif, { once: true });
   } else {
     initAboutAnimations();
+    initHeroGif();
   }
 })();

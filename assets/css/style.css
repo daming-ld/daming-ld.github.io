@@ -3856,15 +3856,23 @@ html[data-theme=light][data-bg=gradient] {
 
 .about-hero__inner {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px 40px;
+}
+
+.about-hero__body {
+  flex: 1 1 420px;
+  min-width: 280px;
 }
 
 .about-hero__gif {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  flex: 0 0 auto;
   width: 220px;
   height: auto;
+  max-width: 100%;
   pointer-events: none;
   user-select: none;
 }
@@ -4343,7 +4351,7 @@ html[data-bg=gradient] .about-card::after {
     font-size: 68px;
   }
   .about-hero__gif {
-    display: none;
+    width: 160px;
   }
 }
 @media (max-width: 720px) {
