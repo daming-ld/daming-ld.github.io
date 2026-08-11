@@ -54,6 +54,8 @@
                             <p>当前共有 <strong id="post-count">0</strong> 篇文章。</p>
                             <p>最新文章日期：<strong id="latest-date"></strong></p>
                         </div>
+                        <h3 class="category-list-title">分类</h3>
+                        <div class="tags-list" id="category-list"></div>
                     </div>
                 </aside>
                 <aside class="glass-card page-aside-card">
@@ -74,7 +76,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', async function () {
             const scrollContainer = document.getElementById('tags-scroll');
-            let tagItems = document.querySelectorAll('.tag-list-item');
+            let tagItems = document.querySelectorAll('.tag-list-item:not(.category-list-item)');
+            let categoryItems = document.querySelectorAll('.category-list-item');
             let postItems = document.querySelectorAll('.post-item');
             const asideTitle = document.querySelector('.page-aside-card h2');
             const postCount = document.getElementById('post-count');
@@ -91,15 +94,19 @@
             const pageSize = 8;
             const contextStorageKey = 'post-list-context';
             let activeTag = null;
+            let activeCategory = null;
             let currentPage = 1;
 
             const FALLBACK_POST_FILES = [
-                '2026-08-03-空域特制DLC_V1.md',
-                '2026-08-03-真理通途DLC_V1.md',
-                '2026-08-03-灵魂工艺DLC_V1.md',
-                '2026-08-03-万古洪荒DLC_V1.md',
+                '角色DLC_V1.0.md',
+                '伤害DLC.md',
+                '空域特制DLC_V1.0.md',
+                '真理通途DLC_V1.0.md',
+                '灵魂工艺DLC_V1.0.md',
+                '万古洪荒DLC_V1.0.md',
+                '人物-其一_DLC.md',
+                '地区-其一_DLC.md',
                 '2026-08-01-角色DLC_V1.md',
-                '2026-07-19-真理通途.md',
                 '2026-05-21-世界的真理_V1.md',
                 '2026-05-11-黑洞吞噬天地真菌.md',
                 '2026-04-11-岩主天星座下没钱弟子.md',
@@ -150,6 +157,8 @@
                         parsed.title = value;
                     } else if (key === 'date') {
                         parsed.date = value.slice(0, 10);
+                    } else if (key === 'category') {
+                        parsed.category = value;
                     } else if (key === 'tags') {
                         value.split(/[,，、\s]+/).forEach(function (tag) {
                             tag = tag.trim().replace(/^["']|["']$/g, '');
@@ -197,6 +206,7 @@
                 item.setAttribute('data-title', post.title);
                 item.setAttribute('data-author', post.author || '');
                 item.setAttribute('data-tags', post.tags.join(','));
+                item.setAttribute('data-category', post.category || '');
                 const link = document.createElement('a');
                 link.href = 'post.html?file=' + encodeURIComponent(post.file);
                 const title = document.createElement('div');
@@ -205,6 +215,12 @@
                 link.appendChild(title);
                 const meta = document.createElement('div');
                 meta.className = 'post-meta';
+                if (post.category) {
+                    const categorySpan = document.createElement('span');
+                    categorySpan.className = 'post-category';
+                    categorySpan.textContent = post.category;
+                    meta.appendChild(categorySpan);
+                }
                 const time = document.createElement('time');
                 time.className = 'post-date';
                 time.textContent = formatPostDate(post.date);
@@ -244,7 +260,26 @@
                 });
             }
 
-            const POSTS_CACHE_KEY = 'posts-cache-v2';
+            const CATEGORY_ORDER = ['正文', '散件', '（世界）合订本/DLC', '设定'];
+
+            function renderCategoryList(categoryCounts) {
+                const container = document.getElementById('category-list');
+                if (!container) return;
+                Object.keys(categoryCounts).sort(function (a, b) {
+                    const ai = CATEGORY_ORDER.indexOf(a);
+                    const bi = CATEGORY_ORDER.indexOf(b);
+                    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+                }).forEach(function (name) {
+                    const chip = document.createElement('button');
+                    chip.type = 'button';
+                    chip.className = 'tag-list-item category-list-item';
+                    chip.setAttribute('data-category', name);
+                    chip.textContent = name + ' (' + categoryCounts[name] + ')';
+                    container.appendChild(chip);
+                });
+            }
+
+            const POSTS_CACHE_KEY = 'posts-cache-v4';
             const POSTS_CACHE_TTL = 5 * 60 * 1000;
 
             function loadCachedPosts() {
@@ -269,6 +304,7 @@
                     if (a[i].file !== b[i].file ||
                         a[i].title !== b[i].title ||
                         a[i].date !== b[i].date ||
+                        a[i].category !== b[i].category ||
                         (a[i].tags || []).join('|') !== (b[i].tags || []).join('|')) {
                         return false;
                     }
@@ -282,12 +318,91 @@
                 list.innerHTML = '';
                 const tagList = document.getElementById('tag-list');
                 if (tagList) { tagList.innerHTML = ''; }
+                const categoryList = document.getElementById('category-list');
+                if (categoryList) { categoryList.innerHTML = ''; }
                 const tagCounts = {};
+                const categoryCounts = {};
                 posts.forEach(function (post) {
                     renderPost(post);
                     post.tags.forEach(function (tag) { tagCounts[tag] = (tagCounts[tag] || 0) + 1; });
+                    if (post.category) { categoryCounts[post.category] = (categoryCounts[post.category] || 0) + 1; }
                 });
                 renderTagList(tagCounts);
+                renderCategoryList(categoryCounts);
+            }
+
+            function buildPostFromMarkdown(text, file) {
+                const parsed = parsePostMarkdown(text);
+                return {
+                    file: file,
+                    title: parsed.title || file.replace(/^\d{4}-\d{2}-\d{2}-/, '').replace(/\.md$/, ''),
+                    date: parsed.date,
+                    category: parsed.category || '',
+                    tags: parsed.tags,
+                    excerpt: extractExcerpt(parsed.content)
+                };
+            }
+
+            function fetchPostText(file) {
+                return fetch('_posts/' + encodeURIComponent(file), { cache: 'no-cache' }).then(function (response) {
+                    if (!response.ok) return null;
+                    return response.text();
+                }).catch(function () { return null; });
+            }
+
+            async function loadPostsFromIndex() {
+                try {
+                    const response = await fetch('posts.json', { cache: 'no-cache' });
+                    if (!response.ok) return null;
+                    const data = await response.json();
+                    if (!Array.isArray(data) || !data.length) return null;
+                    return data.filter(function (item) {
+                        return item && item.file;
+                    }).map(function (item) {
+                        return {
+                            file: item.file,
+                            title: item.title || item.file.replace(/^\d{4}-\d{2}-\d{2}-/, '').replace(/\.md$/, ''),
+                            date: item.date || '',
+                            category: item.category || '',
+                            tags: Array.isArray(item.tags) ? item.tags : []
+                        };
+                    });
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            async function loadPostsFromRepo() {
+                const postFiles = await discoverPostFiles();
+                const posts = [];
+                await Promise.all(postFiles.map(function (file) {
+                    return fetchPostText(file);
+                })).then(function (results) {
+                    results.forEach(function (text, index) {
+                        if (!text) return;
+                        posts.push(buildPostFromMarkdown(text, postFiles[index]));
+                    });
+                });
+                return posts;
+            }
+
+            async function reconcileIndexPosts(posts) {
+                try {
+                    const postFiles = await discoverPostFiles();
+                    const known = {};
+                    posts.forEach(function (post) { known[post.file] = true; });
+                    const missing = postFiles.filter(function (file) { return !known[file]; });
+                    if (!missing.length) return posts;
+                    const added = [];
+                    await Promise.all(missing.map(function (file) {
+                        return fetchPostText(file).then(function (text) {
+                            if (text) added.push(buildPostFromMarkdown(text, file));
+                        });
+                    }));
+                    return posts.concat(added);
+                } catch (e) {
+                    return posts;
+                }
             }
 
             async function loadPosts() {
@@ -302,37 +417,31 @@
                     return;
                 }
 
-                try {
-                    const postFiles = await discoverPostFiles();
-                    const posts = [];
-                    await Promise.all(postFiles.map(function (file) {
-                        return fetch('_posts/' + encodeURIComponent(file), { cache: 'no-cache' }).then(function (response) {
-                            if (!response.ok) return null;
-                            return response.text();
-                        }).catch(function () { return null; });
-                    })).then(function (results) {
-                        results.forEach(function (text, index) {
-                            if (!text) return;
-                            const file = postFiles[index];
-                            const parsed = parsePostMarkdown(text);
-                            posts.push({
-                                file: file,
-                                title: parsed.title || file.replace(/^\d{4}-\d{2}-\d{2}-/, '').replace(/\.md$/, ''),
-                                date: parsed.date,
-                                tags: parsed.tags,
-                                excerpt: extractExcerpt(parsed.content)
-                            });
-                        });
-                    });
+                let posts = await loadPostsFromIndex();
+                if (!posts) {
+                    posts = await loadPostsFromRepo();
+                    if (!posts || !posts.length) { return; }
                     posts.sort(function (a, b) { return b.date.localeCompare(a.date); });
-                    if (!posts.length) { return; }
-
                     saveCachedPosts(posts);
-
                     if (!cached || !samePosts(posts, cached.posts)) {
                         renderPosts(posts);
                     }
-                } catch (e) { }
+                    return;
+                }
+
+                posts.sort(function (a, b) { return b.date.localeCompare(a.date); });
+                saveCachedPosts(posts);
+                if (!cached || !samePosts(posts, cached.posts)) {
+                    renderPosts(posts);
+                }
+
+                reconcileIndexPosts(posts).then(function (merged) {
+                    merged.sort(function (a, b) { return b.date.localeCompare(a.date); });
+                    if (!samePosts(merged, posts)) {
+                        saveCachedPosts(merged);
+                        renderPosts(merged);
+                    }
+                });
             }
 
             function updateTagHighlights() {
@@ -341,11 +450,18 @@
                 });
             }
 
+            function updateCategoryHighlights() {
+                categoryItems.forEach(function (item) {
+                    item.classList.toggle('active', item.getAttribute('data-category') === activeCategory);
+                });
+            }
+
             function saveContext(matchingPosts) {
                 try {
                     sessionStorage.setItem(contextStorageKey, JSON.stringify({
                         query: searchInput ? searchInput.value : '',
                         activeTag: activeTag,
+                        activeCategory: activeCategory,
                         currentPage: currentPage,
                         posts: matchingPosts.map(function (post) {
                             const link = post.querySelector('a');
@@ -369,10 +485,12 @@
                 const matchingPosts = [];
                 postItems.forEach(function (post) {
                     const postTags = post.getAttribute('data-tags') || '';
-                    const searchableText = [post.getAttribute('data-title'), post.getAttribute('data-author'), postTags].join(' ').toLocaleLowerCase();
+                    const postCategory = post.getAttribute('data-category') || '';
+                    const searchableText = [post.getAttribute('data-title'), post.getAttribute('data-author'), postCategory, postTags].join(' ').toLocaleLowerCase();
                     const matchesTag = !activeTag || postTags.split(',').includes(activeTag);
+                    const matchesCategory = !activeCategory || postCategory === activeCategory;
                     const matchesQuery = !query || searchableText.includes(query);
-                    const isVisible = matchesTag && matchesQuery;
+                    const isVisible = matchesTag && matchesCategory && matchesQuery;
                     if (isVisible) {
                         matchingPosts.push(post);
                         visibleCount++;
@@ -388,7 +506,9 @@
                     const matchedIndex = matchingPosts.indexOf(post);
                     post.hidden = matchedIndex < firstPostIndex || matchedIndex >= lastPostIndex;
                 });
-                if (asideTitle) { asideTitle.textContent = activeTag || originalTitle; }
+                if (asideTitle) {
+                    asideTitle.textContent = (activeCategory && activeTag) ? activeCategory + ' / ' + activeTag : (activeCategory || activeTag || originalTitle);
+                }
                 if (postCount) { postCount.textContent = visibleCount; }
                 if (latestDate) { latestDate.textContent = visibleCount ? newestDate : ''; }
                 if (emptyState) { emptyState.hidden = visibleCount !== 0; }
@@ -401,7 +521,8 @@
             }
 
             await loadPosts();
-            tagItems = document.querySelectorAll('.tag-list-item');
+            tagItems = document.querySelectorAll('.tag-list-item:not(.category-list-item)');
+            categoryItems = document.querySelectorAll('.category-list-item');
             postItems = document.querySelectorAll('.post-item');
 
             if (scrollContainer) {
@@ -435,6 +556,16 @@
                 });
             });
 
+            categoryItems.forEach(function (item) {
+                item.addEventListener('click', function () {
+                    const category = this.getAttribute('data-category');
+                    activeCategory = (activeCategory === category) ? null : category;
+                    updateCategoryHighlights();
+                    currentPage = 1;
+                    applyFilters();
+                });
+            });
+
             if (searchInput) {
                 searchInput.addEventListener('input', function () { currentPage = 1; applyFilters(); });
             }
@@ -459,8 +590,10 @@
             if (savedContext) {
                 if (searchInput) { searchInput.value = savedContext.query || ''; }
                 activeTag = savedContext.activeTag || null;
+                activeCategory = savedContext.activeCategory || null;
                 currentPage = Number.isInteger(savedContext.currentPage) ? savedContext.currentPage : 1;
                 updateTagHighlights();
+                updateCategoryHighlights();
             }
             applyFilters();
         });

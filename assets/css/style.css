@@ -1323,6 +1323,24 @@ html[data-theme=light][data-bg=clean] {
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+.post-item .post-category {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: rgba(160, 190, 255, 0.95);
+  background: rgba(120, 160, 255, 0.12);
+  border: 1px solid rgba(120, 160, 255, 0.35);
+}
+html[data-theme=light] .post-item .post-category,
+body.theme-light .post-item .post-category {
+  color: #3d5a99;
+  background: rgba(61, 90, 153, 0.1);
+  border-color: rgba(61, 90, 153, 0.28);
+}
+
 .post-meta {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.6);
@@ -2128,6 +2146,14 @@ html:hover::-webkit-scrollbar-thumb:hover {
   line-height: 1.4;
 }
 
+.category-list-title {
+  display: block;
+  margin: 14px 0 8px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.4;
+}
+
 [data-theme=light] .tag-list-item {
   color: var(--light-tag-text);
   background: transparent;
@@ -2153,6 +2179,10 @@ html:hover::-webkit-scrollbar-thumb:hover {
 
 [data-theme=light] .tag-list-title {
   color: var(--light-text-primary);
+}
+
+[data-theme=light] .category-list-title {
+  color: var(--light-text-secondary, #5a554f);
 }
 
 [data-theme=light] .glass-card code {
